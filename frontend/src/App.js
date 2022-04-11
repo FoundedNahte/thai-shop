@@ -1,18 +1,19 @@
-import logo from './logo.svg';
 import { ReactComponent as Logo } from './assets/test_image.svg';
-import shoppingCartButton from './components/shoppingCartButton';
-//import { shoppingCart } from './src/components/';
 import './App.css';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-//import Stack from '@mui/material/Stack';
-      //<Logo height="400px" width="100px" />
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Home from './pages/Home';
+/*
 function App() {
   return (
     <div className="App">
-      <svg 
-      <Box component="span" sx={{ backgroundColor: '#282c34', height: '400px', width: '400px', p: 2 }}>
+      <Logo height="200px" width="100px" />
+      <Box component="span" sx={{ backgroundColor: '#282c34', height: '100px', width: '100px', p: 2 }}>
         <Button variant="contained" startIcon={<ShoppingCartIcon />}>
           Cart
         </Button>
@@ -25,5 +26,10 @@ function App() {
     </div>
   );
 }
+*/
+
+const App = () => {
+  return <Home/>;
+};
 
 export default App;
