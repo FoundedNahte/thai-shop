@@ -1,22 +1,26 @@
 import logo from './logo.svg';
+import { ReactComponent as Logo } from './assets/test_image.svg';
+import shoppingCartButton from './components/shoppingCartButton';
+//import { shoppingCart } from './src/components/';
 import './App.css';
-
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+//import Stack from '@mui/material/Stack';
+      //<Logo height="400px" width="100px" />
 function App() {
   return (
     <div className="App">
+      <svg 
+      <Box component="span" sx={{ backgroundColor: '#282c34', height: '400px', width: '400px', p: 2 }}>
+        <Button variant="contained" startIcon={<ShoppingCartIcon />}>
+          Cart
+        </Button>
+      </Box>
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          Hello World! | (703) 912-3164
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
       </header>
     </div>
   );
