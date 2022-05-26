@@ -11,10 +11,11 @@ import Logo from './Logo.jsx';
 
 const Container = styled.div`
     height: 60px;
+    position: relative;
 `
 
 const Wrapper = styled.div`
-    padding: 20px 20px;
+    padding: 10px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -48,11 +49,11 @@ const Right = styled.div`
     flex: 1;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-around;
 `
 
 const MenuItem = styled.div`
-    font-size: 20px;
+    font-size: 25px;
     cursor: pointer;
     margin: 25px;
 `
@@ -84,7 +85,7 @@ const Navbar = () => {
                 </Center>
                 <Right>
                   <MenuItem>
-                    CATEGORIES
+                    SHOP
                   </MenuItem>
                   <MenuItem>
                     SIGN IN
