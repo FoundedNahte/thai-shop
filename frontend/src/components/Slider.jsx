@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components'; 
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
-import storePicture1 from '../assets/store.png';
+import StorePictureOne from './StorePictureOne.jsx';
 
 const Container = styled.div`
     width: 100%;
@@ -40,7 +40,7 @@ const Slider = () => {
     return (
         <Container>
             <ImgContainer>
-                <Image src={storePicture1} />
+                <StorePictureOne />
             </ImgContainer>
         </Container>
     )
