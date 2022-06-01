@@ -54,6 +54,7 @@ pub async fn get_connection_pool(configuration: &DatabaseSettings) -> Result<PgP
 }
 
 pub struct ApplicationBaseUrl(pub String);
+use actix_web_lab::web::spa;
 use actix_web::middleware;
 
 async fn run(
@@ -69,10 +70,10 @@ async fn run(
             .wrap(middleware::Logger::default())
             .route("/health_check", web::get().to(health_check))
             .route("/", web::get().to(react_page))
-            .route("/user", web::get().to(react_page))
-            .service(Files::new("/", "./public").index_file("index.html"))
+            .route("/usr", web::get().to(react_page))
             .app_data(db_pool.clone())
             .app_data(base_url.clone())
+            .service(Files::new("/", "/home/ethan/repo/thai-shop/frontend/build").index_file("index.html"))
     })
     .listen(listener)?
     .run();
