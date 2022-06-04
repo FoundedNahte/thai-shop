@@ -1,8 +1,13 @@
+use crate::startup::ApplicationBuildPath;
 use actix_files::NamedFile;
+use actix_web::web;
 use std::path::PathBuf;
 
-pub async fn react_page() -> Result<NamedFile, std::io::Error> {
-    let path: PathBuf = PathBuf::from("/home/ethan/repo/thai-shop/frontend/build/index.html");
+pub async fn react_page(
+    build_path: web::Data<ApplicationBuildPath>,
+) -> Result<NamedFile, std::io::Error> {
+    let mut path: PathBuf = PathBuf::new();
+    path.push(&build_path.0);
+    path.push("index.html");
     Ok(NamedFile::open(path)?)
 }
-

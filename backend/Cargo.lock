@@ -360,6 +360,7 @@ dependencies = [
  "anyhow",
  "chrono",
  "config",
+ "csv",
  "env_logger",
  "htmlescape",
  "reqwest",
