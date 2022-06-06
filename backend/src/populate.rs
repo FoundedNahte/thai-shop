@@ -23,8 +23,8 @@ where
 }
 
 pub async fn populate_database(
-    item_base_path: String,
-    pool: PgPool,
+    item_base_path: &String,
+    pool: &PgPool,
 ) -> Result<(), anyhow::Error> {
     let mut files: Vec<String> = Vec::new();
     let mut item_list: PathBuf = PathBuf::new();
@@ -76,7 +76,10 @@ pub async fn populate_database(
         }
         string
     };
-    let mut file = File::open(&item_list)?;
+    println!("{:?}", item_list);
+    println!("{}", data(String::new()));
+    let mut file = File::options().write(true).open(&item_list)?;
+    println!("Successfully opened file");
     file.write_all(data(String::new()).as_bytes())?;
     Ok(())
 }
