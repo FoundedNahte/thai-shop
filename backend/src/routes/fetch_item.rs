@@ -1,4 +1,4 @@
-use actix_web::{web, Responde, Result};
+use actix_web::{web, Responder, Result};
 
 #[derive(serde::Deserialize)]
 struct Category(String);
