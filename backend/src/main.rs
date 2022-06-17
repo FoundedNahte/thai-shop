@@ -7,13 +7,10 @@ use std::env;
 async fn main() -> anyhow::Result<()> {
     let configuration = get_configuration().expect("Failed to read configuration.");
 
-    match env::var("POPULATE") {
-        Ok(v) => {
-            if v.eq_ignore_ascii_case("true") {
-                populate_database(&configuration.application.item_path, &get_connection_pool(&configuration.database)).await?;
-            } 
-        },
-        Err(_) => {},
+    if let Ok(v) = env::var("POPULATE") {
+        if v.eq_ignore_ascii_case("true") {
+            populate_database(&configuration.application.item_path, &get_connection_pool(&configuration.database)).await?;
+        }
     }
 
     let application = Application::build(configuration).await?;

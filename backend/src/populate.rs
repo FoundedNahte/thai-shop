@@ -9,6 +9,7 @@ use uuid::Uuid;
 #[derive(serde::Deserialize)]
 pub struct Item {
     pub name: String,
+    pub category: String,
     pub description: String,
     pub price: f64,
     pub discount: f64,
@@ -22,10 +23,12 @@ where
     Ok(io::BufReader::new(file).lines())
 }
 
+// Initial call to populate database with item directory on app startup
 pub async fn populate_database(
     item_base_path: &String,
     pool: &PgPool,
 ) -> Result<(), anyhow::Error> {
+    // Populate vector with all item paths
     let mut files: Vec<String> = Vec::new();
     let mut item_list: PathBuf = PathBuf::new();
     item_list.push(&item_base_path);
@@ -38,6 +41,8 @@ pub async fn populate_database(
             }
         }
     }
+    //
+    // Read csv and add to database one by one
     let mut new_files: Vec<String> = Vec::new();
     for item in files {
         let mut item_path: PathBuf = PathBuf::new();
@@ -90,10 +95,11 @@ async fn insert_item(
 ) -> Result<Uuid, sqlx::Error> {
     let item_id = Uuid::new_v4();
     sqlx::query!(
-        r#"INSERT INTO items (name, id, description, price, discount)
-        VALUES ($1, $2, $3, $4, $5)"#,
+        r#"INSERT INTO items (name, id, category, description, price, discount)
+        VALUES ($1, $2, $3, $4, $5, $6)"#,
         item.name,
         Uuid::new_v4(),
+        item.category,
         item.description,
         item.price,
         item.discount

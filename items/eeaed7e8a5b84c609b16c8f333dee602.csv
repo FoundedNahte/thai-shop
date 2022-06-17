@@ -1,2 +1,2 @@
-name,description,price,discount
-Pineapple,"Who lives in a pineapple under the sea",8.99,0.0
+name,category,description,price,discount
+Pineapple,fruit,"Who lives in a pineapple under the sea",8.99,0.0
