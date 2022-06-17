@@ -9,5 +9,5 @@ pub async fn react_page(
     let mut path: PathBuf = PathBuf::new();
     path.push(&build_path.0);
     path.push("index.html");
-    Ok(NamedFile::open(path)?)
+    NamedFile::open(path)
 }

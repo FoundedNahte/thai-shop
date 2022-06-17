@@ -35,13 +35,17 @@ pub async fn populate_database(
     item_list.push("item_list");
     item_list.set_extension("txt");
     if let Ok(lines) = read_lines(&item_list) {
-        for line in lines {
+        for line in lines.flatten() {
+            /*
             if let Ok(ip) = line {
                 files.push(ip);
             }
+            */
+            println!("{}", line);
+            files.push(line);
         }
     }
-    //
+    /*
     // Read csv and add to database one by one
     let mut new_files: Vec<String> = Vec::new();
     for item in files {
@@ -77,7 +81,7 @@ pub async fn populate_database(
     let data = |mut string: String| -> String { 
         for file in new_files.iter() {
             string.push_str(file);
-            string.push_str("\n");
+            string.push('\n');
         }
         string
     };
@@ -86,6 +90,7 @@ pub async fn populate_database(
     let mut file = File::options().write(true).open(&item_list)?;
     println!("Successfully opened file");
     file.write_all(data(String::new()).as_bytes())?;
+    */
     Ok(())
 }
 
