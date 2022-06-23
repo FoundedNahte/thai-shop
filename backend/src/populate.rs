@@ -34,47 +34,17 @@ pub async fn populate_database(
     item_list.push(&item_base_path);
     item_list.push("item_list");
     item_list.set_extension("txt");
+    let mut new_files: Vec<String> = Vec::new();
+
     if let Ok(lines) = read_lines(&item_list) {
-        for line in lines.flatten() {
+        for item in lines.flatten() {
             /*
             if let Ok(ip) = line {
                 files.push(ip);
             }
             */
-            println!("{}", line);
-            files.push(line);
-        }
-    }
-    /*
-    // Read csv and add to database one by one
-    let mut new_files: Vec<String> = Vec::new();
-    for item in files {
-        let mut item_path: PathBuf = PathBuf::new();
-        item_path.push(&item_base_path);
-        item_path.push(&item);
-        item_path.set_extension("csv");
-        let mut reader = csv::Reader::from_path(&item_path)?;
-        let mut iter = reader.deserialize();
-        
-        if let Some(result) = iter.next() {
-            let record: Item = result?;
-            let mut transaction = pool
-                .begin()
-                .await
-                .expect("Failed to acquire a Postgres connection from the pool");
-            let item_id = insert_item(&mut transaction, &record)
-                .await
-                .expect("Failed to insert new item in database");
-            item_path.set_extension("png");
-            let mut temp: PathBuf = PathBuf::new();
-            temp.push(&item_base_path);
-            temp.push(&item_id.to_simple().to_string());
-            temp.set_extension("png");
-            fs::rename(&item_path, &temp)?;
-            item_path.set_extension("csv");
-            temp.set_extension("csv");
-            fs::rename(&item_path, &temp)?;
-            new_files.push(item_id.to_simple().to_string());
+            println!("Adding {} to database", item);
+            new_files.push(add_item(&item, &item_base_path, &pool).await?);
         }
     }
     // Append all filenames into string with new lines in between each item
@@ -88,10 +58,48 @@ pub async fn populate_database(
     println!("{:?}", item_list);
     println!("{}", data(String::new()));
     let mut file = File::options().write(true).open(&item_list)?;
-    println!("Successfully opened file");
     file.write_all(data(String::new()).as_bytes())?;
-    */
     Ok(())
+}
+
+async fn add_item(
+    name: &String,
+    item_base_path: &String,
+    pool: &PgPool,
+) -> Result<String, anyhow::Error> {
+    // Read item's csv
+    let mut item_path: PathBuf = PathBuf::new();
+    item_path.push(&item_base_path);
+    item_path.push(&name);
+    item_path.set_extension("csv");
+    let mut reader = csv::Reader::from_path(&item_path)?;
+    let mut iter = reader.deserialize();
+    let mut id: String = String::new();
+
+    if let Some(result) = iter.next() {
+        let record: Item = result?;
+        let mut transaction = pool
+            .begin()
+            .await
+            .expect("Failed to acquire a Postgres connection from the pool");
+
+        let item_id = insert_item(&mut transaction, &record)
+            .await
+            .expect("Failed to insert new item in database");
+
+        // Rename files with uuid
+        item_path.set_extension("png");
+        let mut temp: PathBuf = PathBuf::new();
+        temp.push(&item_base_path);
+        temp.push(&item_id.to_simple().to_string());
+        temp.set_extension("png");
+        fs::rename(&item_path, &temp)?;
+        item_path.set_extension("csv");
+        temp.set_extension("csv");
+        fs::rename(&item_path, &temp)?;
+        id = item_id.to_simple().to_string();
+    }
+    Ok(id)
 }
 
 async fn insert_item(
