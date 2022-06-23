@@ -38,11 +38,6 @@ pub async fn populate_database(
 
     if let Ok(lines) = read_lines(&item_list) {
         for item in lines.flatten() {
-            /*
-            if let Ok(ip) = line {
-                files.push(ip);
-            }
-            */
             println!("Adding {} to database", item);
             new_files.push(add_item(&item, &item_base_path, &pool).await?);
         }
