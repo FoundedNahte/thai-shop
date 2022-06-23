@@ -11,6 +11,7 @@ const Container = styled.div`
     position: relative;
     overflow: hidden;
     align-items: center;
+    margin-top: 50px;
 `
 const Wrapper = styled.div`
     margin-left: 20px;
