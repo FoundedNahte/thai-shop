@@ -8,6 +8,7 @@ import TextField from '@mui/material/TextField';
 import Badge from '@mui/material/Badge';
 import InputAdornment from '@mui/material/InputAdornment';
 import Logo from './Logo.jsx';
+import {Link} from 'react-router-dom';
 
 const Container = styled.div`
     height: 60px;
@@ -63,10 +64,13 @@ const Navbar = () => {
         <Container>
             <Wrapper>
                 <Left>
-                    <Logo
-                      style={{ height: '50px', width: '300px' }}
-                      alt="website logo"
-                    />
+                    <Link to="/home">
+                      <Logo
+                        style={{ height: '50px', width: '300px' }}
+                        alt="website logo">
+                      <Link to="/home"></Link>
+                      </Logo>
+                    </Link>
                 </Left>
                 <Center>
                   <TextField fullWidth 
@@ -85,15 +89,17 @@ const Navbar = () => {
                 </Center>
                 <Right>
                   <MenuItem>
-                    SHOP
+                    <Link to="/shop">SHOP</Link>
                   </MenuItem>
                   <MenuItem>
-                    SIGN IN
+                    <Link to="/signin">SIGN IN</Link>
                   </MenuItem>
                   <MenuItem>
-                    <Badge badgeContent={4} color="primary">
-                      <ShoppingCartIcon />
-                    </Badge>
+                    <Link to ="/cart">
+                      <Badge badgeContent={4} color="primary">
+                        <ShoppingCartIcon />
+                      </Badge>
+                    </Link>
                   </MenuItem>
                 </Right>
             </Wrapper>
