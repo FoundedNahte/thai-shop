@@ -1,3 +1,4 @@
+use crate::domain::Item;
 use anyhow::Result;
 use sqlx::{PgPool, Postgres, Transaction};
 use std::fs;
@@ -6,14 +7,6 @@ use std::io::{self, BufRead, Write};
 use std::path::{Path, PathBuf};
 use uuid::Uuid;
 
-#[derive(serde::Deserialize)]
-pub struct Item {
-    pub name: String,
-    pub category: String,
-    pub description: String,
-    pub price: f64,
-    pub discount: f64,
-}
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where
