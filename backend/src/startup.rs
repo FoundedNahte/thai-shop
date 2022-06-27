@@ -1,5 +1,5 @@
 use crate::configuration::{DatabaseSettings, Settings};
-use crate::routes::{health_check, react_page};
+use crate::routes::{health_check, react_page, fetch_items};
 use actix_files::Files;
 use actix_web::dev::Server;
 use actix_web::web::Data;
@@ -68,6 +68,7 @@ async fn run(
             .wrap(TracingLogger::default())
             .route("/health_check", web::get().to(health_check))
             .route("/", web::get().to(react_page))
+            .service(fetch_items)
             .app_data(db_pool.clone())
             .app_data(base_url.clone())
             .app_data(Data::new(ApplicationBuildPath(build_path.clone())))
