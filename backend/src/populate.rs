@@ -98,17 +98,19 @@ async fn insert_item(
 ) -> Result<Uuid, InsertError> {
     let item_id = Uuid::new_v4();
 
-    items::ActiveModel {
+    let item = items::ActiveModel {
         name: Set(item.name.to_owned()),
         id: Set(item_id.to_owned()),
         category: Set(item.category.to_owned()),
         description: Set(item.description.to_owned()),
         price: Set(item.price.to_owned()),
         discount: Set(item.discount.to_owned()),
-    }
-    .save(db)
-    .await
-    .context("Failed to insert item into database");
+    };
+    
+    items::Entity::insert(item)
+        .exec(db)
+        .await
+        .context("Failed to insert item into database");
 
     Ok(item_id)
 }
