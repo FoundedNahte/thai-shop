@@ -52,3 +52,4 @@ actix-files = "0.6.0"
 csv = "1.1"
 futures = "0.3.21"
 thiserror = "1.0.31"
+sea-orm = { version = "^0", features = [ "sqlx-postgres", "runtime-actix-rustls", "macros"] }

@@ -28,6 +28,8 @@ pub struct DatabaseSettings {
     pub host: String,
     pub database_name: String,
     pub require_ssl: bool,
+    pub database_url: String,
+    pub populate: bool,
 }
 
 impl DatabaseSettings {

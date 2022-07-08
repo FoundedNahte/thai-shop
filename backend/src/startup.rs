@@ -1,3 +1,4 @@
+use crate::populate::populate_database;
 use crate::configuration::{DatabaseSettings, Settings};
 use crate::routes::{health_check, react_page, fetch_items};
 use actix_files::Files;
@@ -8,6 +9,7 @@ use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use std::net::TcpListener;
 use tracing_actix_web::TracingLogger;
+use sea_orm::{DatabaseConnection, Database};
 
 pub struct Application {
     port: u16,
@@ -16,12 +18,17 @@ pub struct Application {
 
 impl Application {
     pub async fn build(configuration: Settings) -> Result<Self, anyhow::Error> {
-        let connection_pool = get_connection_pool(&configuration.database);
+        //let connection_pool = get_connection_pool(&configuration.database);
+        let connection_pool = Database::connect(&configuration.database.database_url).await?;
 
         let address = format!(
             "{}:{}",
             configuration.application.host, configuration.application.port
         );
+
+        if configuration.database.populate {
+            populate_database(&configuration.application.item_path, &connection_pool).await?;
+        }
 
         let listener = TcpListener::bind(&address)?;
         let port = listener.local_addr().unwrap().port();
@@ -56,11 +63,10 @@ pub struct ApplicationBuildPath(pub String);
 
 async fn run(
     listener: TcpListener,
-    db_pool: PgPool,
+    db_pool: DatabaseConnection,
     base_url: String,
     build_path: String,
 ) -> Result<Server, anyhow::Error> {
-    env_logger::init();
     let db_pool = Data::new(db_pool);
     let base_url = Data::new(ApplicationBaseUrl(base_url));
     let server = HttpServer::new(move || {

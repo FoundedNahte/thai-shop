@@ -1,31 +1,10 @@
-use crate::domain::ItemId;
+use crate::domain::{ItemId, FetchError};
 use sqlx::PgPool;
-use actix_web::{get, web, Responder, Result, ResponseError};
-use actix_web::http::StatusCode;
+use actix_web::{get, web, Responder, Result};
 use anyhow::Context;
 
 #[derive(serde::Deserialize)]
 pub struct Category(String);
-
-#[derive(thiserror::Error)]
-pub enum FetchError {
-    #[error(transparent)]
-    UnexpectedError(#[from] anyhow::Error)
-}
-
-impl ResponseError for FetchError {
-    fn status_code(&self) -> StatusCode {
-        match self {
-            FetchError::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-        }
-    }
-}
-
-impl std::fmt::Debug for FetchError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        error_chain_fmt(self, f)
-    }
-}
 
 #[get("/category/{category}")]
 pub async fn fetch_items(path: web::Path<String>, pool: web::Data<PgPool>) -> Result<impl Responder, FetchError> {
@@ -46,17 +25,4 @@ async fn get_items(category: &String, pool: &PgPool) -> Result<Vec<ItemId>, anyh
     .await?;
 
     Ok(rows)
-}
-
-pub fn error_chain_fmt(
-    e: &impl std::error::Error,
-    f: &mut std::fmt::Formatter<'_>,
-) -> std::fmt::Result {
-    writeln!(f, "{}\n", e)?;
-    let mut current = e.source();
-    while let Some(cause) = current {
-        writeln!(f, "Caused by:\n\t{}", cause)?;
-        current = cause.source();
-    }
-    Ok(())
 }

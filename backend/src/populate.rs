@@ -1,10 +1,15 @@
+use crate::entity::items;
 use crate::domain::Item;
+use crate::domain::InsertError;
 use anyhow::Result;
 use sqlx::{PgPool, Postgres, Transaction};
 use std::fs;
 use std::fs::File;
 use std::io::{self, BufRead, Write};
 use std::path::{Path, PathBuf};
+use sea_orm::DatabaseConnection;
+use sea_orm::entity::*;
+use anyhow::Context;
 use uuid::Uuid;
 
 
@@ -19,7 +24,7 @@ where
 // Initial call to populate database with item directory on app startup
 pub async fn populate_database(
     item_base_path: &String,
-    pool: &PgPool,
+    pool: &DatabaseConnection,
 ) -> Result<(), anyhow::Error> {
     // Populate vector with all item paths
     let mut files: Vec<String> = Vec::new();
@@ -53,7 +58,7 @@ pub async fn populate_database(
 async fn add_item(
     name: &String,
     item_base_path: &String,
-    pool: &PgPool,
+    pool: &DatabaseConnection,
 ) -> Result<String, anyhow::Error> {
     // Read item's csv
     let mut item_path: PathBuf = PathBuf::new();
@@ -66,12 +71,8 @@ async fn add_item(
 
     if let Some(result) = iter.next() {
         let record: Item = result?;
-        let mut transaction = pool
-            .begin()
-            .await
-            .expect("Failed to acquire a Postgres connection from the pool");
 
-        let item_id = insert_item(&mut transaction, &record)
+        let item_id = insert_item(&pool, &record)
             .await
             .expect("Failed to insert new item in database");
 
@@ -90,22 +91,24 @@ async fn add_item(
     Ok(id)
 }
 
+
 async fn insert_item(
-    transaction: &mut Transaction<'_, Postgres>,
+    db: &DatabaseConnection,
     item: &Item,
-) -> Result<Uuid, sqlx::Error> {
+) -> Result<Uuid, InsertError> {
     let item_id = Uuid::new_v4();
-    sqlx::query!(
-        r#"INSERT INTO items (name, id, category, description, price, discount)
-        VALUES ($1, $2, $3, $4, $5, $6)"#,
-        item.name,
-        Uuid::new_v4(),
-        item.category,
-        item.description,
-        item.price,
-        item.discount
-    )
-    .execute(transaction)
-    .await?;
+
+    items::ActiveModel {
+        name: Set(item.name.to_owned()),
+        id: Set(item_id.to_owned()),
+        category: Set(item.category.to_owned()),
+        description: Set(item.description.to_owned()),
+        price: Set(item.price.to_owned()),
+        discount: Set(item.discount.to_owned()),
+    }
+    .save(db)
+    .await
+    .context("Failed to insert item into database");
+
     Ok(item_id)
 }
