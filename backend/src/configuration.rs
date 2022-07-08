@@ -17,6 +17,7 @@ pub struct ApplicationSettings {
     pub base_url: String,
     pub build_path: String,
     pub item_path: String,
+    pub image_path: String,
 }
 
 #[derive(serde::Deserialize, Clone)]

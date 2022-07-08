@@ -8,6 +8,7 @@ use actix_web::{web, App, HttpServer};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use std::net::TcpListener;
+use std::collections::HashSet;
 use tracing_actix_web::TracingLogger;
 use sea_orm::{DatabaseConnection, Database};
 
@@ -25,9 +26,11 @@ impl Application {
             "{}:{}",
             configuration.application.host, configuration.application.port
         );
-
+        
+        let mut file_names: HashSet<String> = HashSet::new();
+    
         if configuration.database.populate {
-            populate_database(&configuration.application.item_path, &connection_pool).await?;
+            file_names = populate_database(&configuration.application.item_path, &configuration.application.image_path, &connection_pool).await?;
         }
 
         let listener = TcpListener::bind(&address)?;
@@ -37,6 +40,8 @@ impl Application {
             connection_pool,
             configuration.application.base_url,
             configuration.application.build_path,
+            configuration.application.image_path,
+            file_names,
         )
         .await?;
 
@@ -60,14 +65,19 @@ pub fn get_connection_pool(configuration: &DatabaseSettings) -> PgPool {
 
 pub struct ApplicationBaseUrl(pub String);
 pub struct ApplicationBuildPath(pub String);
+pub struct ApplicationImagePath(pub String);
 
 async fn run(
     listener: TcpListener,
     db_pool: DatabaseConnection,
     base_url: String,
     build_path: String,
+    image_path: String,
+    file_names: HashSet<String>,
 ) -> Result<Server, anyhow::Error> {
+    let files = Data::new(file_names);
     let db_pool = Data::new(db_pool);
+    let image_path = Data::new(ApplicationImagePath(image_path));
     let base_url = Data::new(ApplicationBaseUrl(base_url));
     let server = HttpServer::new(move || {
         App::new()
@@ -77,6 +87,8 @@ async fn run(
             .service(fetch_items)
             .app_data(db_pool.clone())
             .app_data(base_url.clone())
+            .app_data(image_path.clone())
+            .app_data(files.clone())
             .app_data(Data::new(ApplicationBuildPath(build_path.clone())))
             .service(Files::new("/", build_path.clone()).index_file("index.html"))
     })
