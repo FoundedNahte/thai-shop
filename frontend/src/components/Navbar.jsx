@@ -9,6 +9,7 @@ import Badge from '@mui/material/Badge';
 import InputAdornment from '@mui/material/InputAdornment';
 import Logo from './Logo.jsx';
 import {Link} from 'react-router-dom';
+import Categories from '../components/Categories';
 
 const Container = styled.div`
     height: 60px;
@@ -103,6 +104,7 @@ const Navbar = () => {
                   </MenuItem>
                 </Right>
             </Wrapper>
+			<Categories/>
         </Container>
     )
 }
