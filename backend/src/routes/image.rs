@@ -7,7 +7,7 @@ use anyhow::anyhow;
 use std::collections::HashSet;
 use std::path::PathBuf;
 
-#[get("/iamges/{image_id}")]
+#[get("/images/{image_id}")]
 pub async fn get_image(
     path: web::Path<String>,
     files: web::Data<HashSet<String>>,
