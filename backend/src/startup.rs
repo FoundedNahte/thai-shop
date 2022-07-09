@@ -1,6 +1,6 @@
-use crate::populate::populate_database;
+use crate::populate::{populate_database, get_hashset};
 use crate::configuration::{DatabaseSettings, Settings};
-use crate::routes::{health_check, react_page, fetch_items};
+use crate::routes::{health_check, react_page, fetch_items, get_image};
 use actix_files::Files;
 use actix_web::dev::Server;
 use actix_web::web::Data;
@@ -27,10 +27,10 @@ impl Application {
             configuration.application.host, configuration.application.port
         );
         
-        let mut file_names: HashSet<String> = HashSet::new();
+        let file_names: HashSet<String> = get_hashset(&configuration.application.item_path);
     
         if configuration.database.populate {
-            file_names = populate_database(&configuration.application.item_path, &configuration.application.image_path, &connection_pool).await?;
+            populate_database(&configuration.application.item_path, &configuration.application.image_path, &connection_pool).await?;
         }
 
         let listener = TcpListener::bind(&address)?;
@@ -85,6 +85,7 @@ async fn run(
             .route("/health_check", web::get().to(health_check))
             .route("/", web::get().to(react_page))
             .service(fetch_items)
+            .service(get_image)
             .app_data(db_pool.clone())
             .app_data(base_url.clone())
             .app_data(image_path.clone())

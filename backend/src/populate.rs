@@ -21,29 +21,42 @@ where
     let file = File::open(filename)?;
     Ok(io::BufReader::new(file).lines())
 }
+pub fn get_hashset(item_base_path: &String) -> HashSet<String> {
+    let mut item_list: PathBuf = PathBuf::new();
+    item_list.push(&item_base_path);
+    item_list.push("item_list");
+    item_list.set_extension("txt");
+
+    let mut file_names: HashSet<String> = HashSet::new();
+
+    if let Ok(lines) = read_lines(&item_list) {
+        for item in lines.flatten() {
+            file_names.insert(item);
+        }
+    }
+
+    file_names
+}
 
 // Initial call to populate database with item directory on app startup
 pub async fn populate_database(
     item_base_path: &String,
     image_base_path: &String,
     pool: &DatabaseConnection,
-) -> Result<HashSet<String>, anyhow::Error> {
+) -> Result<(), anyhow::Error> {
     // Populate vector with all item paths
-    let files: Vec<String> = Vec::new();
     let mut item_list: PathBuf = PathBuf::new();
     item_list.push(&item_base_path);
     item_list.push("item_list");
     item_list.set_extension("txt");
 
     let mut new_files: Vec<String> = Vec::new();
-    let mut file_names: HashSet<String> = HashSet::new();
 
     if let Ok(lines) = read_lines(&item_list) {
         for item in lines.flatten() {
             println!("Adding {} to database", item);
             let new_name = add_item(&item, &item_base_path, &image_base_path, &pool).await?;
             new_files.push(new_name.to_owned());
-            file_names.insert(new_name.to_owned());
         }
     }
     // Append all filenames into string with new lines in between each item
@@ -58,7 +71,7 @@ pub async fn populate_database(
     println!("{}", data(String::new()));
     let mut file = File::options().write(true).open(&item_list)?;
     file.write_all(data(String::new()).as_bytes())?;
-    Ok(file_names)
+    Ok(())
 }
 
 async fn add_item(

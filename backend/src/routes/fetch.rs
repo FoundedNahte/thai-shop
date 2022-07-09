@@ -1,15 +1,15 @@
 use crate::startup::ApplicationImagePath;
 use crate::entity::items;
 use crate::entity::items::Entity as Item;
-use crate::domain::{ItemId, FetchError};
-use std::path::{Path, PathBuf};
+use crate::domain::FetchError;
+use std::path::PathBuf;
 use std::collections::HashSet;
 use actix_web::{get, web, Responder, Result};
+use actix_web::http::StatusCode;
 use actix_web::HttpResponse;
 use sea_orm::DatabaseConnection;
 use sea_orm::{entity::*, query::*};
 use anyhow::{anyhow, Context};
-use tokio::fs::read;
 
 #[derive(serde::Deserialize)]
 pub struct Category(String);
@@ -22,9 +22,23 @@ pub async fn get_image(path: web::Path<String>, files: web::Data<HashSet<String>
         temp.push(&image_path.0);
         temp.push(&image_id);
         temp.set_extension("png");
-        tokio::fs::read(temp);
+        println!("{:?}", temp);
+        let image_content = tokio::fs::read(temp)
+            .await;
+
+        match image_content {
+            Ok(bytes) => {
+                Ok(HttpResponse::build(StatusCode::OK)
+                    .content_type("image/jpeg")
+                    .body(bytes))
+            },
+            Err(_) => {
+                Err(FetchError::UnexpectedError(anyhow!("Internal Error"))) 
+            }
+        }
     } else {
-        Err(FetchError::UnexpectedError(anyhow!("Internal Error")))
+        println!("Image ID not found");
+        Err(FetchError::UnexpectedError(anyhow!("Image ID not found")))
     }
 }
 
