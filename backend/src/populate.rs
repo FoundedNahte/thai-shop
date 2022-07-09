@@ -1,18 +1,17 @@
-use crate::entity::items;
-use crate::domain::Item;
 use crate::domain::InsertError;
+use crate::domain::Item;
+use crate::entity::items;
+use anyhow::Context;
 use anyhow::Result;
+use sea_orm::entity::*;
+use sea_orm::DatabaseConnection;
 use sqlx::{PgPool, Postgres, Transaction};
 use std::collections::HashSet;
 use std::fs;
 use std::fs::File;
 use std::io::{self, BufRead, Write};
 use std::path::{Path, PathBuf};
-use sea_orm::DatabaseConnection;
-use sea_orm::entity::*;
-use anyhow::Context;
 use uuid::Uuid;
-
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
 where
@@ -60,7 +59,7 @@ pub async fn populate_database(
         }
     }
     // Append all filenames into string with new lines in between each item
-    let data = |mut string: String| -> String { 
+    let data = |mut string: String| -> String {
         for file in new_files.iter() {
             string.push_str(file);
             string.push('\n');
@@ -106,7 +105,7 @@ async fn add_item(
         image_temp.push(&item_id.to_simple().to_string());
         image_temp.set_extension("png");
         fs::rename(&item_image_path, &image_temp)?;
-        
+
         // Rname csv files with uuid
         let mut csv_temp: PathBuf = PathBuf::new();
         csv_temp.push(&item_base_path);
@@ -118,11 +117,7 @@ async fn add_item(
     Ok(id)
 }
 
-
-async fn insert_item(
-    db: &DatabaseConnection,
-    item: &Item,
-) -> Result<Uuid, InsertError> {
+async fn insert_item(db: &DatabaseConnection, item: &Item) -> Result<Uuid, InsertError> {
     let item_id = Uuid::new_v4();
 
     let item = items::ActiveModel {
@@ -133,7 +128,7 @@ async fn insert_item(
         price: Set(item.price.to_owned()),
         discount: Set(item.discount.to_owned()),
     };
-    
+
     items::Entity::insert(item)
         .exec(db)
         .await

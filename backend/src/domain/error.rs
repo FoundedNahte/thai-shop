@@ -1,10 +1,10 @@
-use actix_web::ResponseError;
 use actix_web::http::StatusCode;
+use actix_web::ResponseError;
 
 #[derive(thiserror::Error)]
 pub enum InsertError {
     #[error(transparent)]
-    UnexpectedError(#[from] anyhow::Error)
+    UnexpectedError(#[from] anyhow::Error),
 }
 
 impl ResponseError for InsertError {
@@ -21,11 +21,10 @@ impl std::fmt::Debug for InsertError {
     }
 }
 
-
 #[derive(thiserror::Error)]
 pub enum FetchError {
     #[error(transparent)]
-    UnexpectedError(#[from] anyhow::Error)
+    UnexpectedError(#[from] anyhow::Error),
 }
 
 impl ResponseError for FetchError {

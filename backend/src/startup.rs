@@ -1,16 +1,16 @@
-use crate::populate::{populate_database, get_hashset};
 use crate::configuration::{DatabaseSettings, Settings};
-use crate::routes::{health_check, react_page, fetch_items, get_image};
+use crate::populate::{get_hashset, populate_database};
+use crate::routes::{fetch_items, get_image, health_check, react_page};
 use actix_files::Files;
 use actix_web::dev::Server;
 use actix_web::web::Data;
 use actix_web::{web, App, HttpServer};
+use sea_orm::{Database, DatabaseConnection};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
-use std::net::TcpListener;
 use std::collections::HashSet;
+use std::net::TcpListener;
 use tracing_actix_web::TracingLogger;
-use sea_orm::{DatabaseConnection, Database};
 
 pub struct Application {
     port: u16,
@@ -26,11 +26,16 @@ impl Application {
             "{}:{}",
             configuration.application.host, configuration.application.port
         );
-        
+
         let file_names: HashSet<String> = get_hashset(&configuration.application.item_path);
-    
+
         if configuration.database.populate {
-            populate_database(&configuration.application.item_path, &configuration.application.image_path, &connection_pool).await?;
+            populate_database(
+                &configuration.application.item_path,
+                &configuration.application.image_path,
+                &connection_pool,
+            )
+            .await?;
         }
 
         let listener = TcpListener::bind(&address)?;

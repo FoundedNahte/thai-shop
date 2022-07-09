@@ -16,4 +16,5 @@ pub struct ItemId {
     pub category: String,
     pub description: String,
     pub price: f64,
-    pub discount: f64, }
+    pub discount: f64,
+}

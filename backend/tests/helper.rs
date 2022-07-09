@@ -1,9 +1,8 @@
 use backend::configuration::{get_configuration, DatabaseSettings};
 use backend::startup::{get_connection_pool, Application};
+use once_cell::sync::Lazy;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use uuid::Uuid;
-use once_cell::sync::Lazy;
-
 
 pub struct TestApp {
     pub address: String,
@@ -45,7 +44,7 @@ pub async fn spawn_app() -> TestApp {
 }
 
 pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
-	// Create Database
+    // Create Database
     let mut connection = PgConnection::connect_with(&config.without_db())
         .await
         .expect("Failed to connect to Postgres.");
@@ -63,4 +62,3 @@ pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
         .expect("Failed to migrate the database");
     connection_pool
 }
-
