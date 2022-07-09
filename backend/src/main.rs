@@ -1,8 +1,6 @@
 use backend::configuration::get_configuration;
-use backend::populate::populate_database;
-use backend::startup::{get_connection_pool, Application};
+use backend::startup::Application;
 use backend::telemetry::{get_subscriber, init_subscriber};
-use std::env;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

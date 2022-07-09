@@ -5,7 +5,6 @@ use anyhow::Context;
 use anyhow::Result;
 use sea_orm::entity::*;
 use sea_orm::DatabaseConnection;
-use sqlx::{PgPool, Postgres, Transaction};
 use std::collections::HashSet;
 use std::fs;
 use std::fs::File;
@@ -54,7 +53,7 @@ pub async fn populate_database(
     if let Ok(lines) = read_lines(&item_list) {
         for item in lines.flatten() {
             println!("Adding {} to database", item);
-            let new_name = add_item(&item, &item_base_path, &image_base_path, &pool).await?;
+            let new_name = add_item(&item, item_base_path, image_base_path, pool).await?;
             new_files.push(new_name.to_owned());
         }
     }
@@ -91,7 +90,7 @@ async fn add_item(
     if let Some(result) = iter.next() {
         let record: Item = result?;
 
-        let item_id = insert_item(&pool, &record)
+        let item_id = insert_item(pool, &record)
             .await
             .expect("Failed to insert new item in database");
 
@@ -132,7 +131,7 @@ async fn insert_item(db: &DatabaseConnection, item: &Item) -> Result<Uuid, Inser
     items::Entity::insert(item)
         .exec(db)
         .await
-        .context("Failed to insert item into database");
+        .context("Failed to insert item into database")?;
 
     Ok(item_id)
 }
