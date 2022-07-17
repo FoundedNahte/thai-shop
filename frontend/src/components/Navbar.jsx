@@ -1,6 +1,8 @@
 import React from 'react';
 import createTheme from '@mui/material/styles/createTheme';
 import { ThemeProvider } from '@mui/material';
+import tw from 'twin.macro';
+import { css } from 'styled-components/macro';
 import styled from 'styled-components';
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -11,11 +13,14 @@ import Logo from './Logo.jsx';
 import {Link} from 'react-router-dom';
 import Categories from '../components/Categories';
 
-const Container = styled.div`
-    height: 60px;
-    position: relative;
+const Container = tw.div`
+  relative
 `
 
+const Wrapper = tw.div`
+  justify-between flex sm:py-1 md:py-2 items-center border-0 border-b-8 border-[#e3e836] border-double
+`
+/*
 const Wrapper = styled.div`
     padding: 10px 20px;
     display: flex;
@@ -24,11 +29,23 @@ const Wrapper = styled.div`
     border-bottom: 5px solid #e3e836;
 `
 
+*/
+  
+const Left = tw.div`
+  flex-1 flex items-center w-1/4
+`
+
+const LogoContainer = tw.div`
+  flex items-center m-5
+`
+
+/*
 const Left = styled.div`
     flex: 1;
     display: flex;
     align-items: center;
 `
+*/
 
 const categoryMenu = styled.label`
     font-size: 20px;
@@ -41,6 +58,10 @@ const Input = styled.input`
     width: 600px;
 `
 
+const Center = tw.div`
+  flex items-center w-1/4 sm:w-1/3 md:w-1/2 m-5
+`
+/*
 const Center = styled.div`
     flex: 2;
     text-align: center;
@@ -53,12 +74,21 @@ const Right = styled.div`
     align-items: center;
     justify-content: space-around;
 `
+*/
+const Right = tw.div`
+  flex-shrink flex items-center w-1/4 justify-around
+`
 
+const MenuItem = tw.div`
+  cursor-pointer text-xl font-medium
+`
+/*
 const MenuItem = styled.div`
     font-size: 25px;
     cursor: pointer;
     margin: 25px;
 `
+*/
 
 const Navbar = () => {
     return (
@@ -66,11 +96,13 @@ const Navbar = () => {
             <Wrapper>
                 <Left>
                     <Link to="/home">
-                      <Logo
-                        style={{ height: '50px', width: '300px' }}
-                        alt="website logo">
-                      <Link to="/home"></Link>
-                      </Logo>
+                      <LogoContainer>
+                        <Logo
+                          style={{ preserveAspectRatio: "xMidYMid meet", viewBox: "0 0 700 550"}}
+                          alt="website logo">
+                        <Link to="/home"></Link>
+                        </Logo>
+                      </LogoContainer>
                     </Link>
                 </Left>
                 <Center>
@@ -82,6 +114,7 @@ const Navbar = () => {
                         </InputAdornment>
                       ),
                       style: {
+                        preserveAspectRatio: "xMidYMid meet",
                         borderRadius: "50px",
                         border: "3px solid gray",
                       }
@@ -104,7 +137,6 @@ const Navbar = () => {
                   </MenuItem>
                 </Right>
             </Wrapper>
-			<Categories/>
         </Container>
     )
 }

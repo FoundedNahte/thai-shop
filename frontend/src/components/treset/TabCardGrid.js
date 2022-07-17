@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import tw from "twin.macro";
 import styled from "styled-components";
 import { css } from "styled-components/macro"; //eslint-disable-line
@@ -7,7 +7,7 @@ import { Container, ContentWithPaddingXl } from "./Layouts.js";
 import { SectionHeading } from "./Headings.js";
 import { PrimaryButton as PrimaryButtonBase } from "./Buttons.js";
 
-const HeaderRow = tw.div`flex justify-between items-center flex-col xl:flex-row`;
+const HeaderRow = tw.div`flex justify-items-center justify-center items-center flex-col xl:flex-row`;
 const Header = tw(SectionHeading)``;
 const TabsControl = tw.div`flex flex-wrap bg-gray-200 px-2 py-2 rounded leading-none mt-12 xl:mt-0`;
 
@@ -20,8 +20,8 @@ const TabControl = styled.div`
   }
 `;
 
-const TabContent = tw(motion.div)`mt-6 flex flex-wrap sm:-mr-10 md:-mr-6 lg:-mr-12`;
-const CardContainer = tw.div`mt-10 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 sm:pr-10 md:pr-6 lg:pr-12`;
+const TabContent = tw(motion.div)`mt-6 justify-center items-center flex flex-wrap sm:-mr-10 md:-mr-6 lg:-mr-12`;
+const CardContainer = tw.div`mt-10 w-full sm:w-1/3 md:w-1/4 lg:w-1/5 sm:pr-10 md:pr-6 lg:pr-12`;
 const Card = tw(motion.a)`bg-gray-200 rounded-b block max-w-xs mx-auto sm:max-w-none sm:mx-0`;
 const CardImageContainer = styled.div`
   ${props => css`background-image: url("${props.imageSrc}");`}
@@ -50,7 +50,7 @@ const CardPrice = tw.p`mt-4 text-xl font-bold`;
 
 
 export default ({
-  heading = "Checkout the Menu",
+  heading = "",
   tabs = {
     Starters: [
       {
@@ -200,7 +200,7 @@ export default ({
                       }}
                       transition={{ duration: 0.3 }}
                     >
-                      <CardButton>Buy Now</CardButton>
+                      <CardButton>Add To Cart</CardButton>
                     </CardHoverOverlay>
                   </CardImageContainer>
                   <CardText>
