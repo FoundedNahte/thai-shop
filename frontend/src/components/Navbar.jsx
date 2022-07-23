@@ -5,13 +5,16 @@ import tw from 'twin.macro';
 import { css } from 'styled-components/macro';
 import styled from 'styled-components';
 import SearchIcon from '@mui/icons-material/Search';
+import MenuIcon from '@mui/icons-material/Menu';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import InputAdornment from '@mui/material/InputAdornment';
 import Logo from './Logo.jsx';
 import {Link} from 'react-router-dom';
 import Categories from '../components/Categories';
+import SideMenu from '../components/SideMenu';
 
 const Container = tw.div`
   relative
@@ -20,16 +23,6 @@ const Container = tw.div`
 const Wrapper = tw.div`
   justify-between flex sm:py-1 md:py-2 items-center border-0 border-b-8 border-[#e3e836] border-double
 `
-/*
-const Wrapper = styled.div`
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 5px solid #e3e836;
-`
-
-*/
   
 const Left = tw.div`
   flex-1 flex items-center w-1/4
@@ -38,14 +31,6 @@ const Left = tw.div`
 const LogoContainer = tw.div`
   flex items-center m-5
 `
-
-/*
-const Left = styled.div`
-    flex: 1;
-    display: flex;
-    align-items: center;
-`
-*/
 
 const categoryMenu = styled.label`
     font-size: 20px;
@@ -61,20 +46,6 @@ const Input = styled.input`
 const Center = tw.div`
   flex items-center w-1/4 sm:w-1/3 md:w-1/2 m-5
 `
-/*
-const Center = styled.div`
-    flex: 2;
-    text-align: center;
-    align-items: center;
-`
-
-const Right = styled.div`
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-`
-*/
 const Right = tw.div`
   flex-shrink flex items-center w-1/4 justify-around
 `
@@ -82,15 +53,38 @@ const Right = tw.div`
 const MenuItem = tw.div`
   cursor-pointer text-xl font-medium
 `
-/*
-const MenuItem = styled.div`
-    font-size: 25px;
-    cursor: pointer;
-    margin: 25px;
+
+const MenuWrapper = tw.div`
+  invisible md:visible
 `
-*/
 
 const Navbar = () => {
+
+    const categoriesInput = {
+      categories: [
+        {
+          name: "Fruit",
+          items: [],
+        },
+        {
+          name: "Dried Products",
+          items: [
+            {
+              name: "Thai Dessert",
+            },
+          ],
+        },
+        {
+          name: "Sauce",
+          items: [
+            {
+              name: "Chili Sauce",
+            },
+          ]
+        }
+      ]
+    };
+
     return (
         <Container>
             <Wrapper>
@@ -98,7 +92,7 @@ const Navbar = () => {
                     <Link to="/home">
                       <LogoContainer>
                         <Logo
-                          style={{ preserveAspectRatio: "xMidYMid meet", viewBox: "0 0 700 550"}}
+                          style={{ preserveAspectRatio: "xMidYMid meet", viewBox: "0 0 500 550"}}
                           alt="website logo">
                         <Link to="/home"></Link>
                         </Logo>
@@ -106,35 +100,9 @@ const Navbar = () => {
                     </Link>
                 </Left>
                 <Center>
-                  <TextField fullWidth 
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <SearchIcon/>
-                        </InputAdornment>
-                      ),
-                      style: {
-                        preserveAspectRatio: "xMidYMid meet",
-                        borderRadius: "50px",
-                        border: "3px solid gray",
-                      }
-                    }}
-                    id="SearchBar" />
                 </Center>
                 <Right>
-                  <MenuItem>
-                    <Link to="/shop">SHOP</Link>
-                  </MenuItem>
-                  <MenuItem>
-                    <Link to="/signin">SIGN IN</Link>
-                  </MenuItem>
-                  <MenuItem>
-                    <Link to ="/cart">
-                      <Badge badgeContent={4} color="primary">
-                        <ShoppingCartIcon />
-                      </Badge>
-                    </Link>
-                  </MenuItem>
+                  <SideMenu input={categoriesInput}/>
                 </Right>
             </Wrapper>
         </Container>
