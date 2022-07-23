@@ -16,21 +16,22 @@ import {Link} from 'react-router-dom';
 import Categories from '../components/Categories';
 import SideMenu from '../components/SideMenu';
 import SearchBar from '../components/SearchBar';
+import LogoPng from '../assets/logo-cropped.png';
 
 const Container = tw.div`
-  relative
+  relative bg-indigo-300
 `
 
 const Wrapper = tw.div`
-  justify-between flex sm:py-1 md:py-2 items-center border-0 border-b-8 border-[#e3e836] border-double
+  justify-between flex  sm:py-1 md:py-2 items-center border-0 border-b-8 border-[#e3e836] border-double
 `
   
 const Left = tw.div`
-  flex-1 flex items-center w-1/4 sm:max-w-md
+  flex items-start place-items-start justify-start w-1/4 sm:max-w-md
 `
 
 const LogoContainer = tw.div`
-  items-center m-5 
+  items-start m-5 items-start justify-start m-0 p-2 block
 `
 
 const categoryMenu = styled.label`
@@ -45,10 +46,10 @@ const Input = styled.input`
 `
 
 const Center = tw.div`
-  flex items-center w-1/4 sm:w-1/3 md:w-1/2 m-5
+  flex justify-center items-center w-1/4 sm:w-1/3 md:w-1/2 m-5
 `
 const Right = tw.div`
-  flex-shrink flex items-center w-1/4 justify-around
+  flex-shrink flex items-end w-1/4 justify-end
 `
 
 const MenuItem = tw.div`
@@ -59,6 +60,12 @@ const MenuWrapper = tw.div`
   invisible md:visible
 `
 
+const ImageWrapper = tw.img`
+  w-24 h-10 block sm:w-36 sm:h-14
+`
+const ImageA = tw.a`
+
+`
 const Navbar = () => {
 
     const categoriesInput = {
@@ -92,14 +99,16 @@ const Navbar = () => {
                 <Left>
                     <Link to="/home">
                       <LogoContainer>
-                        <a class="logo" aria-label="Thai Shop Logo" href="http://localhost:8000/" title="Thai Shop">
-                          <img src="http://localhost:8000/images/logo" alt="Thai Shop" width="200" height="46" />
+                        <a class="navbar-brand" aria-label="Thai Shop Logo" href="http://localhost:8000/" title="Thai Shop">
+                          <ImageWrapper src={LogoPng} alt="Thai Shop" />
                         </a>
                       </LogoContainer>
                     </Link>
                 </Left>
-                <Right>
+                <Center>
                   <SearchBar />
+                </Center>
+                <Right>
                   <SideMenu input={categoriesInput}/>
                 </Right>
             </Wrapper>
