@@ -96,7 +96,7 @@ const SideMenu = ({input}) => {
                                             <ListItemText primary={entry.name} />
                                             {openCategory[entry.name] ? <ExpandLess /> : <ExpandMore />}
                                         </ListItemButton>
-                                        <Collapse in={openCategory[entry.name]}>
+                                        <Collapse in={openCategory[entry.name]} timeout="auto">
                                             <div key={entry.name} id="subcategory">
                                                 <List>
                                                     {entry.items.map((subEntry, index) => {

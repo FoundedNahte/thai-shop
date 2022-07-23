@@ -15,6 +15,7 @@ import Logo from './Logo.jsx';
 import {Link} from 'react-router-dom';
 import Categories from '../components/Categories';
 import SideMenu from '../components/SideMenu';
+import SearchBar from '../components/SearchBar';
 
 const Container = tw.div`
   relative
@@ -25,11 +26,11 @@ const Wrapper = tw.div`
 `
   
 const Left = tw.div`
-  flex-1 flex items-center w-1/4
+  flex-1 flex items-center w-1/4 sm:max-w-md
 `
 
 const LogoContainer = tw.div`
-  flex items-center m-5
+  items-center m-5 
 `
 
 const categoryMenu = styled.label`
@@ -91,17 +92,14 @@ const Navbar = () => {
                 <Left>
                     <Link to="/home">
                       <LogoContainer>
-                        <Logo
-                          style={{ preserveAspectRatio: "xMidYMid meet", viewBox: "0 0 500 550"}}
-                          alt="website logo">
-                        <Link to="/home"></Link>
-                        </Logo>
+                        <a class="logo" aria-label="Thai Shop Logo" href="http://localhost:8000/" title="Thai Shop">
+                          <img src="http://localhost:8000/images/logo" alt="Thai Shop" width="200" height="46" />
+                        </a>
                       </LogoContainer>
                     </Link>
                 </Left>
-                <Center>
-                </Center>
                 <Right>
+                  <SearchBar />
                   <SideMenu input={categoriesInput}/>
                 </Right>
             </Wrapper>
