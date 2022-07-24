@@ -1,21 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
+import tw from 'twin.macro';
+import { css } from 'styled-components/macro'
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
 
-const Container = styled.div`
-    display: flex;
+const Container = tw.div`
+    relative flex bg-yellow-200 h-[-10.5rem] py-[2.5rem]
 `
-
 const Left = styled.div`
     flex: 1;
 `
 
-const Center = styled.div`
-    flex: 1;
-    justify-content: space-between;
-    align-items: center;
-    text-align: center;
+const Center = tw.div`
+    table-column justify-center items-center text-center
 `
 
 const Right = styled.div`

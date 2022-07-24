@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useMemo } from 'react';
 import { AnimatePresence, motion } from "framer-motion";
 import tw from "twin.macro";
 import styled from "styled-components";
@@ -6,6 +7,7 @@ import { css } from "styled-components/macro"; //eslint-disable-line
 import { Container, ContentWithPaddingXl } from "./Layouts.js";
 import { SectionHeading } from "./Headings.js";
 import { PrimaryButton as PrimaryButtonBase } from "./Buttons.js";
+import Pagination from './Pagination';
 
 const HeaderRow = tw.div`flex justify-items-center justify-center items-center flex-col xl:flex-row`;
 const Header = tw(SectionHeading)``;
@@ -50,9 +52,8 @@ const CardPrice = tw.p`mt-4 text-xl font-bold`;
 
 
 export default ({
-  heading = "",
-  tabs = {
-    Starters: [
+  input = {
+    items: [
       {
         imageSrc:
           "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80",
@@ -133,83 +134,59 @@ export default ({
         reviews: "26",
         url: "#"
       }
-    ],
-    Main: getRandomCards(),
-    Soup: getRandomCards(),
-    Desserts: getRandomCards()
+    ]
   }
 }) => {
-  /*
-   * To customize the tabs, pass in data using the `tabs` prop. It should be an object which contains the name of the tab
-   * as the key and value of the key will be its content (as an array of objects).
-   * To see what attributes are configurable of each object inside this array see the example above for "Starters".
-   */
-  const tabsKeys = Object.keys(tabs);
-  const [activeTab, setActiveTab] = useState(tabsKeys[0]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  let PageSize = 5;
+
+  const currentTableData = useMemo(() => {
+    const firstPageIndex = (currentPage - 1) * PageSize;
+    const lastPageIndex = firstPageIndex + PageSize;
+    return input.items.slice(firstPageIndex, lastPageIndex);
+  }, [currentPage]);
 
   return (
     <Container>
       <ContentWithPaddingXl>
-        <HeaderRow>
-          <Header>{heading}</Header>
-          <TabsControl>
-            {Object.keys(tabs).map((tabName, index) => (
-              <TabControl key={index} active={activeTab === tabName} onClick={() => setActiveTab(tabName)}>
-                {tabName}
-              </TabControl>
-            ))}
-          </TabsControl>
-        </HeaderRow>
-
-        {tabsKeys.map((tabKey, index) => (
-          <TabContent
-            key={index}
-            variants={{
-              current: {
-                opacity: 1,
-                scale:1,
-                display: "flex",
-              },
-              hidden: {
-                opacity: 0,
-                scale:0.8,
-                display: "none",
-              }
-            }}
-            transition={{ duration: 0.4 }}
-            initial={activeTab === tabKey ? "current" : "hidden"}
-            animate={activeTab === tabKey ? "current" : "hidden"}
-          >
-            {tabs[tabKey].map((card, index) => (
-              <CardContainer key={index}>
-                <Card className="group" href={card.url} initial="rest" whileHover="hover" animate="rest">
-                  <CardImageContainer imageSrc={card.imageSrc}>
-                    <CardHoverOverlay
-                      variants={{
-                        hover: {
-                          opacity: 1,
-
-                        },
-                        rest: {
-                          opacity: 0,
-                          height: 0
-                        }
-                      }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <CardButton>Add To Cart</CardButton>
-                    </CardHoverOverlay>
-                  </CardImageContainer>
-                  <CardText>
-                    <CardTitle>{card.title}</CardTitle>
-                    <CardContent>{card.content}</CardContent>
-                    <CardPrice>{card.price}</CardPrice>
-                  </CardText>
-                </Card>
-              </CardContainer>
-            ))}
-          </TabContent>
-        ))}
+        <TabContent>
+          {currentTableData.map((card, index) => (
+            <CardContainer key={index}>
+              <Card className="group" href={card.url} initial="rest" whileHover="hover" animate="rest">
+                <CardImageContainer imageSrc={card.imageSrc}>
+                  <CardHoverOverlay
+                    variants={{
+                      hover: {
+                        opacity: 1,
+                      },
+                      rest: {
+                        opacity: 0,
+                        height: 0
+                      }
+                    }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <CardButton>Add To Cart</CardButton>
+                  </CardHoverOverlay>
+                </CardImageContainer>
+                <CardText>
+                  <CardTitle>{card.title}</CardTitle>
+                  <CardContent>{card.content}</CardContent>
+                  <CardPrice>{card.price}</CardPrice>
+                </CardText>
+              </Card>
+            </CardContainer>
+          ))}
+        </TabContent>
+        <Pagination 
+          className="pagination-bar"
+          currentPage={currentPage}
+          totalCount={input.items.length}
+          pageSize={PageSize}
+          onPageChange={page => setCurrentPage(page)}
+        />
       </ContentWithPaddingXl>
     </Container>
   );

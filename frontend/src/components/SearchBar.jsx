@@ -36,13 +36,8 @@ const SearchBarContainer = tw.div`
 `
 const Span1 = tw.span`
 `
-/*
 const ButtonInput = tw.button`
-    items-center flex bg-yellow-400 border-transparent h-[1.90rem] sm:h-[1.84rem] md:h-10 static rounded rounded-l-none
-`
-*/
-const ButtonInput = tw.button`
-    items-center flex bg-yellow-400 border-transparent rounded rounded-l-none h-[1.89rem] md:h-[2.58rem]
+    items-center flex bg-yellow-400 border-transparent rounded rounded-l-none h-[1.89rem] md:h-[2.58rem] transition duration-300 hover:bg-yellow-500
 `
 
 const SearchBar = () => {

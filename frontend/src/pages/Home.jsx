@@ -2,7 +2,7 @@ import React from 'react';
 import Navbar from '../components/Navbar';
 import Slider from '../components/Slider';
 import Footer from '../components/Footer';
-import TabCardGrid from '../components/treset/TabCardGrid.js';
+import TabCardGrid from '../components/CardGrid/TabCardGrid.js';
 
 const Home = () => {
     return (
