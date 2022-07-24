@@ -140,7 +140,7 @@ export default ({
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  let PageSize = 5;
+  let PageSize = 1;
 
   const currentTableData = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * PageSize;

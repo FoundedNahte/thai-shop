@@ -64,7 +64,7 @@ const Pagination = props => {
             <PaginationContainer>
                 <HoverWrapper>
                     <PaginationItem>
-                        <IconButton onClick={onPageChange(1)}>
+                        <IconButton onClick={() => onPageChange(1)}>
                             <FirstPageIcon />
                         </IconButton>
                     </PaginationItem>
@@ -90,7 +90,7 @@ const Pagination = props => {
                     return (
                         <HoverWrapper>
                             <PaginationItem>
-                                <Button onClick={onPageChange(pageNumber)}>
+                                <Button onClick={() => onPageChange(pageNumber)}>
                                     {pageNumber}
                                 </Button>
                             </PaginationItem>
@@ -106,7 +106,7 @@ const Pagination = props => {
                 </HoverWrapper>
                 <HoverWrapper>
                     <PaginationItem>
-                        <IconButton onClick={onPageChange(paginationRange.length)}>
+                        <IconButton onClick={() => onPageChange(paginationRange.length)}>
                             <LastPageIcon />
                         </IconButton>
                     </PaginationItem>
