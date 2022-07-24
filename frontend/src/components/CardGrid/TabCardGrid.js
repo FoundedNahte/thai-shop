@@ -50,6 +50,11 @@ const CardTitle = tw.h5`text-lg font-semibold group-hover:text-gray-500`;
 const CardContent = tw.p`mt-1 text-sm font-medium text-gray-600`;
 const CardPrice = tw.p`mt-4 text-xl font-bold`;
 
+const ProductCard = tw.div`
+`
+
+const ProductImage = tw.div`
+`
 
 export default ({
   input = {
@@ -140,7 +145,7 @@ export default ({
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  let PageSize = 1;
+  let PageSize = 6;
 
   const currentTableData = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * PageSize;
@@ -172,7 +177,7 @@ export default ({
                   </CardHoverOverlay>
                 </CardImageContainer>
                 <CardText>
-                  <CardTitle>{card.title}</CardTitle>
+                  <CardTitle><span className="font-link">{card.title}</span></CardTitle>
                   <CardContent>{card.content}</CardContent>
                   <CardPrice>{card.price}</CardPrice>
                 </CardText>
