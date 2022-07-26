@@ -19,7 +19,7 @@ import SearchBar from '../components/SearchBar';
 import LogoPng from '../assets/logo-cropped.png';
 
 const Container = tw.div`
-  relative bg-indigo-300
+  relative bg-gradient-to-r from-indigo-400 via-blue-400 to-indigo-500
 `
 
 const Wrapper = tw.div`
@@ -46,8 +46,9 @@ const Input = styled.input`
 `
 
 const Center = tw.div`
-  flex justify-center items-center w-1/4 sm:w-1/3 md:w-1/2 m-5
+  flex justify-center items-center w-1/2 m-5
 `
+
 const Right = tw.div`
   flex-shrink flex items-end w-1/4 justify-end
 `
@@ -61,7 +62,7 @@ const MenuWrapper = tw.div`
 `
 
 const ImageWrapper = tw.img`
-  w-24 h-10 block sm:w-36 sm:h-14
+  w-24 h-10 block sm:w-40 sm:h-14
 `
 const ImageA = tw.a`
 
@@ -71,25 +72,65 @@ const Navbar = () => {
     const categoriesInput = {
       categories: [
         {
-          name: "Fruit",
+          name: "Bamboo/Corn/Mushrooms",
+          items: [],
+        },
+        {
+          name: "Beverages/Juices/Drinks",
+          items: [],
+        },
+        {
+          name: "Candies/Snacks",
+          items: [],
+        },
+        {
+          name: "Canned Coconut Milk",
+          items: [],
+        },
+        {
+          name: "Canned Fruits & Vegetables",
+          items: [],
+        },
+        {
+          name: "Curry & Paste",
           items: [],
         },
         {
           name: "Dried Products",
-          items: [
-            {
-              name: "Thai Dessert",
-            },
-          ],
+          items: [],
         },
         {
-          name: "Sauce",
-          items: [
-            {
-              name: "Chili Sauce",
-            },
-          ]
-        }
+          name: "Frozen Products",
+          items: [],
+        },
+        {
+          name: "Instant Noodles",
+          items: [],
+        },
+        {
+          name: "Other Canned Products",
+          items: [],
+        },
+        {
+          name: "Pickled & Preserved Products",
+          items: [],
+        },
+        {
+          name: "Rice",
+          items: [],
+        },
+        {
+          name: "Rice Products/Beans/Starch",
+          items: [],
+        },
+        {
+          name: "Sauces/Spices/Seasonings",
+          items: [],
+        },
+        {
+          name: "Utensils & Non-Food Products",
+          items: [],
+        },
       ]
     };
 

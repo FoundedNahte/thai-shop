@@ -25,7 +25,7 @@ const SearchField = tw.div`
 `
 
 const SearchInput = tw.input`
-    w-36 sm:w-60 md:w-72 lg:w-[32rem] xl:w-[36rem] 2xl:w-[40rem] h-6 md:h-9 rounded border-transparent rounded rounded-r-none outline-none focus:border-yellow-400 focus:border-opacity-50
+    font-sans font-semibold text-xl w-36 sm:w-60 md:w-72 lg:w-[32rem] xl:w-[36rem] 2xl:w-[40rem] h-6 md:h-9 rounded border-transparent rounded rounded-r-none outline-none focus:border-yellow-400 focus:border-opacity-50
 `
 
 const SearchRight = tw.div`
