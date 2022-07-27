@@ -8,6 +8,7 @@ import { Container, ContentWithPaddingXl } from "./Layouts.js";
 import { SectionHeading } from "./Headings.js";
 import { PrimaryButton as PrimaryButtonBase } from "./Buttons.js";
 import Pagination from './Pagination';
+import CheckboxMenu from '../CheckboxMenu';
 
 const HeaderRow = tw.div`flex justify-items-center justify-center items-center flex-col xl:flex-row`;
 const Header = tw(SectionHeading)``;
@@ -63,6 +64,20 @@ const ProductCard = tw.div`
 `
 
 const ProductImage = tw.div`
+`
+
+const CheckboxContainer = tw.div`
+  hidden sm:flex
+`
+
+const LowerWrapper = tw.div`
+  flex
+`
+
+const HeaderWrapper = tw.div``
+
+const HeaderText = tw.h3`
+  invisible sm:visible font-sans font-semibold text-center mb-0 mt-5 pr-[36rem]
 `
 
 export default ({
@@ -153,8 +168,10 @@ export default ({
 }) => {
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [amountOfItems, setAmountOfItems] = useState(0);
+  const [numPages, setNumPages] = useState(0);
 
-  let PageSize = 10;
+  let PageSize = 5;
 
   const currentTableData = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * PageSize;
@@ -164,44 +181,49 @@ export default ({
 
   return (
     <Container>
-      <ContentWithPaddingXl>
-        <TabContent>
-          {currentTableData.map((card, index) => (
-            <CardContainer key={index}>
-              <Card className="group" href={card.url} initial="rest" whileHover="hover" animate="rest">
-                <CardImageContainer imageSrc={card.imageSrc}>
-                  <CardHoverOverlay
-                    variants={{
-                      hover: {
-                        opacity: 1,
-                      },
-                      rest: {
-                        opacity: 0,
-                        height: 0
-                      }
-                    }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <CardButton>Add To Cart</CardButton>
-                  </CardHoverOverlay>
-                </CardImageContainer>
-                <CardText>
-                  <CardTitle><span className="font-link">{card.title}</span></CardTitle>
-                  <CardContent>{card.content}</CardContent>
-                  <CardPrice>{card.price}</CardPrice>
-                </CardText>
-              </Card>
-            </CardContainer>
-          ))}
-        </TabContent>
-        <Pagination 
-          className="pagination-bar"
-          currentPage={currentPage}
-          totalCount={input.items.length}
-          pageSize={PageSize}
-          onPageChange={page => setCurrentPage(page)}
-        />
-      </ContentWithPaddingXl>
+      <LowerWrapper>
+        <CheckboxContainer>
+          <CheckboxMenu currentDataLength={input.items.slice(0, currentPage*PageSize).length} totalItems={input.items.length}/>
+        </CheckboxContainer>
+        <ContentWithPaddingXl>
+          <TabContent>
+            {currentTableData.map((card, index) => (
+              <CardContainer key={index}>
+                <Card className="group" href={card.url} initial="rest" whileHover="hover" animate="rest">
+                  <CardImageContainer imageSrc={card.imageSrc}>
+                    <CardHoverOverlay
+                      variants={{
+                        hover: {
+                          opacity: 1,
+                        },
+                        rest: {
+                          opacity: 0,
+                          height: 0
+                        }
+                      }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <CardButton>Add To Cart</CardButton>
+                    </CardHoverOverlay>
+                  </CardImageContainer>
+                  <CardText>
+                    <CardTitle><span className="font-link">{card.title}</span></CardTitle>
+                    <CardContent>{card.content}</CardContent>
+                    <CardPrice>{card.price}</CardPrice>
+                  </CardText>
+                </Card>
+              </CardContainer>
+            ))}
+          </TabContent>
+          <Pagination 
+            className="pagination-bar"
+            currentPage={currentPage}
+            totalCount={input.items.length}
+            pageSize={PageSize}
+            onPageChange={page => setCurrentPage(page)}
+          />
+        </ContentWithPaddingXl>
+      </LowerWrapper>
     </Container>
   );
 };
