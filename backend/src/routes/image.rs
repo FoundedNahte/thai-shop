@@ -23,7 +23,7 @@ pub async fn get_image(
 
         match image_content {
             Ok(bytes) => Ok(HttpResponse::build(StatusCode::OK)
-                .content_type("iamge/png")
+                .content_type("image/png")
                 .body(bytes)),
             Err(_) => Err(FetchError::UnexpectedError(anyhow!("Internal Error"))),
         }
