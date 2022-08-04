@@ -17,11 +17,11 @@ const ButtonTheme = createTheme({
 })
 
 const MobileContainer = tw.div`
-    visible sm:hidden bg-gray-300
+    visible sm:hidden bg-gray-300 w-full
 `
 
 const TopWrapper = tw.div`
-   flex justify-center items-center
+   inline justify-center items-center w-full
 `
 
 const LowerWrapper = tw.div`
@@ -29,11 +29,11 @@ const LowerWrapper = tw.div`
 `
 
 const ImageWrapper = tw.div`
-    grid w-auto pr-40 items-center justify-center
+    flex items-center justify-center
 `
 
 const InformationWrapper = tw.div`
-    hidden sm:table m-auto w-20 justify-end items-end text-left
+    hidden sm:table m-auto w-20 justify-start items-start text-left w-full p-10
 `
 
 const Header = tw.h3`
@@ -45,7 +45,7 @@ const Text = tw.p`
 `
 
 const DisplayImage = tw.img`
-    sm:w-full items-center justify-center w-full
+    max-w-4xl w-full
 `
 
 const ButtonWrapper = tw.div`
@@ -53,25 +53,30 @@ const ButtonWrapper = tw.div`
 `
 
 const MainContainer = tw.div`
-    hidden sm:contents justify-center items-center
+    hidden sm:contents justify-center items-center h-full w-full
 `
 
 const SingleProductContainer = tw.div`
-    flex
+    flex w-full
 `
 
 const SingleProduct = ({item}) => {
     return (
         <SingleProductContainer>
             <MainContainer>
+                <CheckboxMenu />
                 <TopWrapper>
                     <ImageWrapper>
                         <DisplayImage src={item.imageSrc} />
                     </ImageWrapper>
                     <InformationWrapper>
                         <Header>{item.title}</Header>
+                        <Text>{item.brand}</Text>
                         <Text>{item.content}</Text>
                         <Text>{item.price}</Text>
+                        <ButtonWrapper>
+                            <AddButtons />
+                        </ButtonWrapper>
                     </InformationWrapper>
                 </TopWrapper>
             </MainContainer>
