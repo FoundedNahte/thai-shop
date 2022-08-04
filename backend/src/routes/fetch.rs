@@ -6,15 +6,19 @@ use anyhow::Context;
 use sea_orm::DatabaseConnection;
 use sea_orm::{entity::*, query::*};
 
+
 #[derive(serde::Deserialize)]
-pub struct Category(String);
+struct Parameters {
+    categories: Option<String>,
+    search_term: Option<String>,
+}
 
 #[get("/category/{category}")]
 pub async fn fetch_items(
-    path: web::Path<String>,
+    parameters: web::Query<Parameters>,
     pool: web::Data<DatabaseConnection>,
 ) -> Result<impl Responder, FetchError> {
-    let query = path.into_inner();
+    let categories: Vec<String> = Parameters.categories.unwrap_or_default()
     let query = get_items(&query, &pool).await.context("test")?;
 
     Ok(web::Json(query))
