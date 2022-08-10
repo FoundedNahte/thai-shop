@@ -6,7 +6,7 @@ pub struct Item {
     pub category: String,
     pub description: String,
     pub price: f64,
-    pub discount: f64,
+    pub brand: String,
 }
 
 #[derive(serde::Deserialize, serde::Serialize)]

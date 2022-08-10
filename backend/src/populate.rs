@@ -36,6 +36,33 @@ pub fn get_hashset(item_base_path: &String) -> HashSet<String> {
     file_names
 }
 
+pub async fn populate_database(
+    item_base_path: &String,
+    image_base_path: &String,
+    pool: &DatabaseConnection,
+) -> Result<(), anyhow::Error> {
+    // Create a csv reader from item.csv in item_base_path
+    let mut item_list: PathBuf = PathBuf::new();
+
+    item_list.push(&item_base_path);
+    item_list.push("items");
+    item_list.set_extension("csv");
+
+    let file = File::open(item_list)?;
+
+    let mut reader = csv::Reader::from_reader(file);
+    
+    // Read each entry in the csv, appending each to the database
+    for result in reader.deserialize() {
+        let item: Item = result?;
+
+        insert_item(pool, &item); 
+    }
+    
+    Ok(())
+}
+
+/*
 // Initial call to populate database with item directory on app startup
 pub async fn populate_database(
     item_base_path: &String,
@@ -72,6 +99,7 @@ pub async fn populate_database(
     Ok(())
 }
 
+*/
 async fn add_item(
     name: &String,
     item_base_path: &String,
@@ -125,7 +153,7 @@ async fn insert_item(db: &DatabaseConnection, item: &Item) -> Result<Uuid, Inser
         category: Set(item.category.to_owned()),
         description: Set(item.description.to_owned()),
         price: Set(item.price.to_owned()),
-        discount: Set(item.discount.to_owned()),
+        brand: Set(item.brand.to_owned()),
     };
 
     items::Entity::insert(item)

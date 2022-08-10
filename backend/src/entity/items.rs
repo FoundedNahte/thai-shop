@@ -14,7 +14,8 @@ pub struct Model {
     #[sea_orm(column_type = "Text")]
     pub description: String,
     pub price: f64,
-    pub discount: f64,
+    #[sea_orm(column_type = "Text")]
+    pub brand: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter)]
