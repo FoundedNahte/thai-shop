@@ -5,7 +5,7 @@ use anyhow::Context;
 use anyhow::Result;
 use sea_orm::entity::*;
 use sea_orm::DatabaseConnection;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::fs::File;
 use std::io::{self, BufRead, Write};
@@ -19,6 +19,7 @@ where
     let file = File::open(filename)?;
     Ok(io::BufReader::new(file).lines())
 }
+
 pub fn get_hashset(item_base_path: &String) -> HashSet<String> {
     let mut item_list: PathBuf = PathBuf::new();
     item_list.push(&item_base_path);
@@ -36,6 +37,28 @@ pub fn get_hashset(item_base_path: &String) -> HashSet<String> {
     file_names
 }
 
+pub fn get_table(item_base_path: &String) -> Option<HashMap<String, String>> {
+    let mut item_store: PathBuf = PathBuf::new();
+
+    item_store.push(&item_base_path);
+    item_store.push("items_store");
+    item_store.set_extension("txt");
+
+    if item_store.exists() {
+        let mut table: HashMap<String, String> = HashMap::new();
+
+        if let Ok(lines) = read_lines(&item_store) {
+            for line in lines.flatten() {
+                let line_split: Vec<&str> = line.split('-').collect();
+                table.insert(line_split[0].to_string(), line_split[1].to_string());
+            }
+        }
+        Some(table)
+    } else {
+        None
+    }
+}
+
 pub async fn populate_database(
     item_base_path: &String,
     image_base_path: &String,
@@ -51,97 +74,75 @@ pub async fn populate_database(
     let file = File::open(item_list)?;
 
     let mut reader = csv::Reader::from_reader(file);
-    
+
+    let mut new_files: Vec<String> = Vec::new();
+
+    let table: Option<HashMap<String, String>> = get_table(item_base_path);
+
     // Read each entry in the csv, appending each to the database
     for result in reader.deserialize() {
         let item: Item = result?;
 
-        insert_item(pool, &item); 
-    }
-    
-    Ok(())
-}
+        let item_id = insert_item(pool, &item)
+            .await
+            .expect("Failed to insert new item in database");
 
-/*
-// Initial call to populate database with item directory on app startup
-pub async fn populate_database(
-    item_base_path: &String,
-    image_base_path: &String,
-    pool: &DatabaseConnection,
-) -> Result<(), anyhow::Error> {
-    // Populate vector with all item paths
-    let mut item_list: PathBuf = PathBuf::new();
-    item_list.push(&item_base_path);
-    item_list.push("item_list");
-    item_list.set_extension("txt");
+        // Since we are renaming image files with the id for fast lookup, we will keep a phsyical
+        // txt will all the linking names and ids for human ease and server restarts
+        let mut temp_string = String::new();
 
-    let mut new_files: Vec<String> = Vec::new();
+        temp_string.push_str(&item.name);
+        temp_string.push_str("-");
+        temp_string.push_str(&item_id.to_simple().to_string());
 
-    if let Ok(lines) = read_lines(&item_list) {
-        for item in lines.flatten() {
-            println!("Adding {} to database", item);
-            let new_name = add_item(&item, item_base_path, image_base_path, pool).await?;
-            new_files.push(new_name.to_owned());
+        // Rename file based on whether or not image file has been renamed already
+        if let Some(ref v) = table {
+            let previous_id = v.get(&item_id.to_simple().to_string());
+
+            if let Some(id) = previous_id {
+                let old_image_path = format!("{}/{}/{}", &image_base_path, id, ".png");
+                let new_image_path = format!(
+                    "{}/{}/{}",
+                    &image_base_path,
+                    &item_id.to_simple().to_string(),
+                    ".png"
+                );
+                fs::rename(old_image_path, new_image_path);
+            }
+        } else {
+            let old_image_path = format!("{}/{}/{}", &image_base_path, &item.name, ".png");
+            let new_image_path = format!(
+                "{}/{}/{}",
+                &image_base_path,
+                &item_id.to_simple().to_string(),
+                ".png"
+            );
+            fs::rename(old_image_path, new_image_path);
         }
+
+        new_files.push(temp_string);
     }
-    // Append all filenames into string with new lines in between each item
-    let data = |mut string: String| -> String {
+
+    // Write new file names into existing txt or create new one if none exists
+    let append_data = |mut string: String| -> String {
         for file in new_files.iter() {
             string.push_str(file);
             string.push('\n');
         }
         string
     };
-    println!("{:?}", item_list);
-    println!("{}", data(String::new()));
-    let mut file = File::options().write(true).open(&item_list)?;
-    file.write_all(data(String::new()).as_bytes())?;
+
+    let mut item_store: PathBuf = PathBuf::new();
+
+    item_store.push(&item_base_path);
+    item_store.push("items_store");
+    item_store.set_extension("txt");
+
+    // Writes no matter if file exists or not
+    let mut file = File::options().write(true).open(&item_store)?;
+    file.write_all(append_data(String::new()).as_bytes())?;
+
     Ok(())
-}
-
-*/
-async fn add_item(
-    name: &String,
-    item_base_path: &String,
-    image_base_path: &String,
-    pool: &DatabaseConnection,
-) -> Result<String, anyhow::Error> {
-    // Read item's csv
-    let mut item_path: PathBuf = PathBuf::new();
-    item_path.push(&item_base_path);
-    item_path.push(&name);
-    item_path.set_extension("csv");
-    let mut reader = csv::Reader::from_path(&item_path)?;
-    let mut iter = reader.deserialize();
-    let mut id: String = String::new();
-
-    if let Some(result) = iter.next() {
-        let record: Item = result?;
-
-        let item_id = insert_item(pool, &record)
-            .await
-            .expect("Failed to insert new item in database");
-
-        // Rename image files with uuid
-        let mut item_image_path: PathBuf = PathBuf::new();
-        item_image_path.push(&image_base_path);
-        item_image_path.push(&name);
-        item_image_path.set_extension("png");
-        let mut image_temp: PathBuf = PathBuf::new();
-        image_temp.push(&image_base_path);
-        image_temp.push(&item_id.to_simple().to_string());
-        image_temp.set_extension("png");
-        fs::rename(&item_image_path, &image_temp)?;
-
-        // Rname csv files with uuid
-        let mut csv_temp: PathBuf = PathBuf::new();
-        csv_temp.push(&item_base_path);
-        csv_temp.push(&item_id.to_simple().to_string());
-        csv_temp.set_extension("csv");
-        fs::rename(&item_path, &csv_temp)?;
-        id = item_id.to_simple().to_string();
-    }
-    Ok(id)
 }
 
 async fn insert_item(db: &DatabaseConnection, item: &Item) -> Result<Uuid, InsertError> {

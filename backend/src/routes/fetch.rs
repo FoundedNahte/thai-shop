@@ -6,7 +6,6 @@ use anyhow::Context;
 use sea_orm::DatabaseConnection;
 use sea_orm::{entity::*, query::*};
 
-
 #[derive(serde::Deserialize)]
 struct Parameters {
     categories: Option<String>,
@@ -18,7 +17,7 @@ pub async fn fetch_items(
     parameters: web::Query<Parameters>,
     pool: web::Data<DatabaseConnection>,
 ) -> Result<impl Responder, FetchError> {
-    let categories: Vec<String> = Parameters.categories.unwrap_or_default()
+    let categories: Vec<String> = Parameters.categories.unwrap_or_default();
     let query = get_items(&query, &pool).await.context("test")?;
 
     Ok(web::Json(query))
