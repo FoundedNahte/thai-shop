@@ -9,7 +9,7 @@ use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::fs::File;
 use std::io::{self, BufRead, Write};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use uuid::Uuid;
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
@@ -21,10 +21,7 @@ where
 }
 
 pub fn get_hashset(item_base_path: &String) -> HashSet<String> {
-    let mut item_list: PathBuf = PathBuf::new();
-    item_list.push(&item_base_path);
-    item_list.push("item_list");
-    item_list.set_extension("txt");
+    let item_list = format!("{}/{}/{}", &item_base_path, "item_list", ".txt");
 
     let mut file_names: HashSet<String> = HashSet::new();
 
@@ -38,13 +35,9 @@ pub fn get_hashset(item_base_path: &String) -> HashSet<String> {
 }
 
 pub fn get_table(item_base_path: &String) -> Option<HashMap<String, String>> {
-    let mut item_store: PathBuf = PathBuf::new();
+    let item_store = format!("{}/{}/{}", &item_base_path, "items_store", ".txt");
 
-    item_store.push(&item_base_path);
-    item_store.push("items_store");
-    item_store.set_extension("txt");
-
-    if item_store.exists() {
+    if Path::new(&item_store).exists() {
         let mut table: HashMap<String, String> = HashMap::new();
 
         if let Ok(lines) = read_lines(&item_store) {
@@ -65,11 +58,7 @@ pub async fn populate_database(
     pool: &DatabaseConnection,
 ) -> Result<(), anyhow::Error> {
     // Create a csv reader from item.csv in item_base_path
-    let mut item_list: PathBuf = PathBuf::new();
-
-    item_list.push(&item_base_path);
-    item_list.push("items");
-    item_list.set_extension("csv");
+    let item_list = format!("{}/{}/{}", &item_base_path, "items", ".csv");
 
     let file = File::open(item_list)?;
 
@@ -89,11 +78,7 @@ pub async fn populate_database(
 
         // Since we are renaming image files with the id for fast lookup, we will keep a phsyical
         // txt will all the linking names and ids for human ease and server restarts
-        let mut temp_string = String::new();
-
-        temp_string.push_str(&item.name);
-        temp_string.push_str("-");
-        temp_string.push_str(&item_id.to_simple().to_string());
+        let temp_string = format!("{}-{}", &item.name, &item_id.to_simple().to_string());
 
         // Rename file based on whether or not image file has been renamed already
         if let Some(ref v) = table {
@@ -132,11 +117,7 @@ pub async fn populate_database(
         string
     };
 
-    let mut item_store: PathBuf = PathBuf::new();
-
-    item_store.push(&item_base_path);
-    item_store.push("items_store");
-    item_store.set_extension("txt");
+    let item_store = format!("{}/{}/{}", &item_base_path, "items_store", ".txt");
 
     // Writes no matter if file exists or not
     let mut file = File::options().write(true).open(&item_store)?;
