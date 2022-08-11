@@ -4,5 +4,5 @@ CREATE TABLE items(
 	category TEXT NOT NULL,
 	description TEXT NOT NULL,
 	price float NOT NULL,
-	discount float NOT NULL
+	brand TEXT
 )

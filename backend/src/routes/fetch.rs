@@ -17,18 +17,35 @@ pub async fn fetch_items(
     parameters: web::Query<Parameters>,
     pool: web::Data<DatabaseConnection>,
 ) -> Result<impl Responder, FetchError> {
-    let categories: Vec<String> = Parameters.categories.unwrap_or_default();
-    let query = get_items(&query, &pool).await.context("test")?;
+    //let categories: Vec<String> = parameters.categories.unwrap_or_default();
+    //let query = get_items(&query, &pool).await.context("test")?;
 
-    Ok(web::Json(query))
+    Ok(web::Json())
 }
 
 async fn get_items(
-    category: &str,
+    categories: Option<Vec<&str>>,
+    search_term: Option<&str>,
     pool: &DatabaseConnection,
 ) -> Result<Vec<serde_json::Value>, anyhow::Error> {
+
+    let conditions = Condition::any();
+
+    if let Some(vector) = categories {
+        let temp = Condition::any();
+        for category in vector {
+            &temp.add(items::Column::Category.contains(category));
+        }
+        &conditions.add(temp);
+    }
+
+    if let Some(term) = search_term {
+        let temp = Condition::all().add(items::Column::Name.like(&format!("%{}%", term)));
+        &conditions.add(temp);
+    }
+
     let items: Vec<serde_json::Value> = Item::find()
-        .filter(items::Column::Category.contains(category))
+        .filter(conditions)
         .order_by_asc(items::Column::Name)
         .into_json()
         .all(pool)

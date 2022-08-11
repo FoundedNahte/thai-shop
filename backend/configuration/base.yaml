@@ -12,6 +12,6 @@ database:
   database_name: "db"
   require_ssl: false
   database_url: "postgres://postgres:password@localhost:5432/db"
-  populate: false
+  populate: true
 
 
