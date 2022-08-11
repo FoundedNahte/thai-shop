@@ -7,9 +7,9 @@ use sea_orm::DatabaseConnection;
 use sea_orm::{entity::*, query::*};
 
 #[derive(serde::Deserialize)]
-struct Parameters {
-    categories: Option<String>,
-    search_term: Option<String>,
+pub struct Parameters {
+    pub categories: Option<Vec<String>>,
+    pub search_term: Option<String>,
 }
 
 #[get("/category/{category}")]
@@ -17,35 +17,38 @@ pub async fn fetch_items(
     parameters: web::Query<Parameters>,
     pool: web::Data<DatabaseConnection>,
 ) -> Result<impl Responder, FetchError> {
-    //let categories: Vec<String> = parameters.categories.unwrap_or_default();
-    //let query = get_items(&query, &pool).await.context("test")?;
+    let query = get_items(&parameters.categories, &parameters.search_term, &pool).await.context("test")?;
 
-    Ok(web::Json())
+    Ok(web::Json(query))
 }
 
 async fn get_items(
-    categories: Option<Vec<&str>>,
-    search_term: Option<&str>,
+    categories: &Option<Vec<String>>,
+    search_term: &Option<String>,
     pool: &DatabaseConnection,
 ) -> Result<Vec<serde_json::Value>, anyhow::Error> {
 
-    let conditions = Condition::any();
+    let mut categories_condition: Option<sea_orm::Condition> = None;
+    let mut search_condition: Option<sea_orm::Condition> = None;
 
     if let Some(vector) = categories {
-        let temp = Condition::any();
+        let mut temp = Condition::any();
         for category in vector {
-            &temp.add(items::Column::Category.contains(category));
+            temp = temp.add(items::Column::Category.contains(&category));
         }
-        &conditions.add(temp);
+        categories_condition = Some(temp);
     }
 
     if let Some(term) = search_term {
         let temp = Condition::all().add(items::Column::Name.like(&format!("%{}%", term)));
-        &conditions.add(temp);
+        search_condition = Some(temp);
     }
 
     let items: Vec<serde_json::Value> = Item::find()
-        .filter(conditions)
+        .filter(Condition::any()
+            .add_option(categories_condition)
+            .add_option(search_condition)
+        )
         .order_by_asc(items::Column::Name)
         .into_json()
         .all(pool)
