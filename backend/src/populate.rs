@@ -21,7 +21,7 @@ where
 }
 
 pub fn get_hashset(item_base_path: &String) -> HashSet<String> {
-    let item_list = format!("{}/{}/{}", &item_base_path, "item_list", ".txt");
+    let item_list = format!("{}/{}{}", &item_base_path, "item_list", ".txt");
 
     let mut file_names: HashSet<String> = HashSet::new();
 
@@ -35,7 +35,7 @@ pub fn get_hashset(item_base_path: &String) -> HashSet<String> {
 }
 
 pub fn get_table(item_base_path: &String) -> Option<HashMap<String, String>> {
-    let item_store = format!("{}/{}/{}", &item_base_path, "items_store", ".txt");
+    let item_store = format!("{}/{}{}", &item_base_path, "items_store", ".txt");
 
     if Path::new(&item_store).exists() {
         let mut table: HashMap<String, String> = HashMap::new();
@@ -58,7 +58,9 @@ pub async fn populate_database(
     pool: &DatabaseConnection,
 ) -> Result<(), anyhow::Error> {
     // Create a csv reader from item.csv in item_base_path
-    let item_list = format!("{}/{}/{}", &item_base_path, "items", ".csv");
+    let item_list = format!("{}/{}{}", &item_base_path, "items", ".csv");
+    
+    println!("{}", &item_list);
 
     let file = File::open(item_list)?;
 
@@ -85,23 +87,25 @@ pub async fn populate_database(
             let previous_id = v.get(&item_id.to_simple().to_string());
 
             if let Some(id) = previous_id {
-                let old_image_path = format!("{}/{}/{}", &image_base_path, id, ".png");
+                let old_image_path = format!("{}/{}{}", &image_base_path, id, ".png");
                 let new_image_path = format!(
-                    "{}/{}/{}",
+                    "{}/{}{}",
                     &image_base_path,
                     &item_id.to_simple().to_string(),
                     ".png"
                 );
+                println!("{}", format!("{}->{}", &old_image_path, &new_image_path));
                 fs::rename(old_image_path, new_image_path);
             }
         } else {
-            let old_image_path = format!("{}/{}/{}", &image_base_path, &item.name, ".png");
+            let old_image_path = format!("{}/{}{}", &image_base_path, &item.name, ".png");
             let new_image_path = format!(
                 "{}/{}/{}",
                 &image_base_path,
                 &item_id.to_simple().to_string(),
                 ".png"
             );
+            println!("{}", format!("{}->{}", &old_image_path, &new_image_path));
             fs::rename(old_image_path, new_image_path);
         }
 
@@ -117,10 +121,10 @@ pub async fn populate_database(
         string
     };
 
-    let item_store = format!("{}/{}/{}", &item_base_path, "items_store", ".txt");
+    let item_store = format!("{}/{}{}", &item_base_path, "items_store", ".txt");
 
     // Writes no matter if file exists or not
-    let mut file = File::options().write(true).open(&item_store)?;
+    let mut file = File::options().create(true).write(true).open(&item_store)?;
     file.write_all(append_data(String::new()).as_bytes())?;
 
     Ok(())

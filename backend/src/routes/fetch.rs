@@ -8,16 +8,20 @@ use sea_orm::{entity::*, query::*};
 
 #[derive(serde::Deserialize)]
 pub struct Parameters {
-    pub categories: Option<Vec<String>>,
+    pub categories: Option<String>,
     pub search_term: Option<String>,
 }
 
-#[get("/category/{category}")]
+#[get("/search/{parameters}")]
 pub async fn fetch_items(
     parameters: web::Query<Parameters>,
     pool: web::Data<DatabaseConnection>,
 ) -> Result<impl Responder, FetchError> {
-    let query = get_items(&parameters.categories, &parameters.search_term, &pool).await.context("test")?;
+    let test_search = Some(String::from("siracha"));
+
+    let mut test_categories = Vec::new();
+    test_categories
+    let query = get_items(&None, , &pool).await.context("test")?;
 
     Ok(web::Json(query))
 }
@@ -45,7 +49,7 @@ async fn get_items(
     }
 
     let items: Vec<serde_json::Value> = Item::find()
-        .filter(Condition::any()
+        .filter(Condition::all()
             .add_option(categories_condition)
             .add_option(search_condition)
         )
