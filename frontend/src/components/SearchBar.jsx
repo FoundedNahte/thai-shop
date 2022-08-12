@@ -6,6 +6,7 @@ import { css } from 'styled-components/macro';
 import TextField from '@mui/material/TextField';
 import Collapse from '@mui/material/Collapse';
 import SearchIcon from '@mui/icons-material/Search';
+import { ShopContext } from '../pages/Home.jsx';
 
 const Container = tw.div`
     flex justify-between
@@ -42,19 +43,19 @@ const ButtonInput = tw.button`
 
 const SearchBar = () => {
 
-    const [searchTerm, setSearchTerm] = useState({});
+    const { searchTerm, setSearchTerm } = useContext(ShopContext);
 
     
     return (
         <Container>
-            <InputForm action="/search" method="GET" name="site-search" role="search">
+            <InputForm>
                 <Wrapper>
                     <SearchField>
-                        <SearchInput id="searchtextbox" class="nav-input nav-progressive-attribute" type="text" autocomplete="off" placeholder="" aria-label="Search" />
+                        <SearchInput value={searchTerm} onChange={setSearchTerm} id="searchtextbox" class="nav-input nav-progressive-attribute" type="text" autocomplete="off" placeholder="" aria-label="Search" />
                     </SearchField>
                     <SearchRight>
                         <Span1>
-                            <ButtonInput>
+                            <ButtonInput onClick={handleInput}>
                                 <SearchIcon />
                             </ButtonInput>
                         </Span1>
