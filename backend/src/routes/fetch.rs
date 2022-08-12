@@ -8,20 +8,54 @@ use sea_orm::{entity::*, query::*};
 
 #[derive(serde::Deserialize)]
 pub struct Parameters {
-    pub categories: Option<String>,
+    pub categories: Option<i32>,
     pub search_term: Option<String>,
 }
 
-#[get("/search/{parameters}")]
+// Read bits from parameter into vector of categories
+fn bits_into_vector(input_bitfield: Option<i32>) -> Option<Vec<String>> {
+    if let Some(bitfield) = input_bitfield {
+        let categories = [
+            "Bamboo/Corn/Mushrooms",
+            "Beverages/Juices",
+            "Candies/Snacks",
+            "Canned Coconut Milk",
+            "Canned Fruits & Vegetables",
+            "Curry & Paste",
+            "Dried Products",
+            "Frozen Products",
+            "Instant Noodles",
+            "Other Canned Products",
+            "Pickled & Preserved Products",
+            "Rice",
+            "Rice Products/Beans/Starch",
+            "Sauces/Spices/Seasonings",
+            "Utensils & Non-Food Products"
+        ];
+
+        let mut vec_categories: Vec<String> = Vec::new();
+
+        for i in 0..categories.len() {
+            if (bitfield & (1 << i)) != 0 {
+                vec_categories.push(String::from(categories[i]));
+            }
+        }
+
+        Some(vec_categories)
+    } else {
+        None
+    }
+
+}
+
+#[get("/search")]
 pub async fn fetch_items(
     parameters: web::Query<Parameters>,
     pool: web::Data<DatabaseConnection>,
 ) -> Result<impl Responder, FetchError> {
-    let test_search = Some(String::from("siracha"));
 
-    let mut test_categories = Vec::new();
-    test_categories
-    let query = get_items(&None, , &pool).await.context("test")?;
+    println!("{:?}", &bits_into_vector(parameters.categories));
+    let query = get_items(&bits_into_vector(parameters.categories), &parameters.search_term, &pool).await.context("test")?;
 
     Ok(web::Json(query))
 }
