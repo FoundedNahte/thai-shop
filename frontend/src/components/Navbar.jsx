@@ -17,6 +17,7 @@ import Categories from '../components/Categories';
 import SideMenu from '../components/SideMenu';
 import SearchBar from '../components/SearchBar';
 import LogoPng from '../assets/logo-cropped.png';
+import ShopContext from '../pages/Home.jsx';
 
 const Container = tw.div`
   relative bg-gradient-to-r from-indigo-400 via-blue-400 to-indigo-500
@@ -67,7 +68,7 @@ const ImageWrapper = tw.img`
 const ImageA = tw.a`
 
 `
-const Navbar = () => {
+const Navbar = ({searchTerm, setSearchTerm}) => {
 
     const categoriesInput = {
       categories: [
@@ -147,7 +148,7 @@ const Navbar = () => {
                     </Link>
                 </Left>
                 <Center>
-                  <SearchBar />
+                  <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
                 </Center>
                 <Right>
                   <SideMenu input={categoriesInput}/>

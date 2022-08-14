@@ -111,23 +111,37 @@ function filterReducer(state, newBit) {
   return state | (1 << newBit);
 }
 
-function searchReducer(state, term) {
-  return term;
+export function constructLink(newBit, newTerm) {
+  var temp = "http://localhost:8000/search?";
+  if (newBit != 0) {
+    temp += "categories=" + newBit;
+  }
+  if (newTerm != "") {
+    temp += "search=" + newTerm;
+  }
+  return temp;
 }
 
 const Home = () => {
     const [filter, setFilter] = useReducer(filterReducer, 0);
-    const [searchTerm, setSearchTerm] = useReducer(searchReducer, "");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [link, setLink] = useState(constructLink(filter, searchTerm));
     
+    useEffect(() => {
+      setLink(constructLink(filter, searchTerm));
+    }, [filter, searchTerm]);
+
     return (
-      <ShopContext.Provider value={{ filter, setFilter, searchTerm, setSearchTerm}}>
         <div>
-          <Navbar />
-          <TabCardGrid input={testData}/>
+          <span>{link}</span>
+          <span>{searchTerm}</span>
+          <Navbar searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
+          <TabCardGrid input={testData} />
           <Footer />
         </div>
-      </ShopContext.Provider>
     )
 }
 
 export default Home;
+
+

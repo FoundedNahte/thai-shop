@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useReducer, useContext, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import tw from 'twin.macro';
@@ -6,7 +6,7 @@ import { css } from 'styled-components/macro';
 import TextField from '@mui/material/TextField';
 import Collapse from '@mui/material/Collapse';
 import SearchIcon from '@mui/icons-material/Search';
-import { ShopContext } from '../pages/Home.jsx';
+import ShopContext from '../pages/Home.jsx';
 
 const Container = tw.div`
     flex justify-between
@@ -41,21 +41,38 @@ const ButtonInput = tw.button`
     cursor-pointer items-center flex bg-yellow-400 border-transparent rounded rounded-l-none h-[1.89rem] md:h-[2.58rem] transition duration-300 hover:bg-yellow-500
 `
 
-const SearchBar = () => {
+function ControlledInput({ onUpdate }) {
+    const [value, setState] = useState();
+    const handleChange = e => {
+        setState(e.target.value);
+        onUpdate(e.target.value);
+    };
+    return <SearchInput value={value} onChange={handleChange} id="searchtextbox" class="nav-input nav-progressive-attribute" type="text" autocomplete="off" placeholder="" aria-label="Search"/>;
+}
 
-    const { searchTerm, setSearchTerm } = useContext(ShopContext);
+const SearchBar = ({searchTerm, setSearchTerm}) => {
 
-    
+    const localTerm = useRef("");
+
+    const handleClick = () => {
+        setSearchTerm(localTerm.current)
+    }
+
     return (
         <Container>
             <InputForm>
                 <Wrapper>
                     <SearchField>
-                        <SearchInput value={searchTerm} onChange={setSearchTerm} id="searchtextbox" class="nav-input nav-progressive-attribute" type="text" autocomplete="off" placeholder="" aria-label="Search" />
+                        <ControlledInput
+                            onUpdate={val => {
+                                localTerm.current = val;
+                            }}
+                        />
+                        
                     </SearchField>
                     <SearchRight>
                         <Span1>
-                            <ButtonInput onClick={handleInput}>
+                            <ButtonInput onClick={handleClick}>
                                 <SearchIcon />
                             </ButtonInput>
                         </Span1>
