@@ -171,7 +171,7 @@ const testData = [
   }
 ];
 
-export default ({input}) => {
+export default ({filter, setFilter, input}) => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [amountOfItems, setAmountOfItems] = useState(0);
@@ -189,7 +189,7 @@ export default ({input}) => {
     <Container>
       <LowerWrapper>
         <CheckboxContainer>
-          <CheckboxMenu currentDataLength={input.items.slice(0, currentPage*PageSize).length} totalItems={input.items.length}/>
+          <CheckboxMenu filter={filter} setFilter={setFilter} currentDataLength={input.items.slice(0, currentPage*PageSize).length} totalItems={input.items.length}/>
         </CheckboxContainer>
         <ContentWithPaddingXl>
           <TabContent>

@@ -134,9 +134,9 @@ const Home = () => {
     return (
         <div>
           <span>{link}</span>
-          <span>{searchTerm}</span>
+          <span>{filter}</span>
           <Navbar searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
-          <TabCardGrid input={testData} />
+          <TabCardGrid filter={filter} setFilter={setFilter} input={testData} />
           <Footer />
         </div>
     )

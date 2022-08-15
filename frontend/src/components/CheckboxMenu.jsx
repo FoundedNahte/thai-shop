@@ -28,32 +28,77 @@ const TextWrapper = tw.div`
     flex items-center
 `
 
-const CheckboxMenu = ({currentDataLength, totalItems}) => {
+const CheckboxMenu = ({filter, setFilter, currentDataLength, totalItems}) => {
     
+    const categories = [
+        "Bamboo/Corn/Mushrooms",
+        "Beverages/Juices",
+        "Candies/Snacks",
+        "Canned Coconut Milk",
+        "Canned Fruits & Vegetables",
+        "Curry & Paste",
+        "Dried Products",
+        "Frozen Products",
+        "Instant Noodles",
+        "Other Canned Products",
+        "Pickled & Preserved Products",
+        "Rice",
+        "Rice Products/Beans/Starch",
+        "Sauces/Spices/Seasonings",
+        "Utensils & Non-Food Products",
+    ];
+
+    const [state, setState] = useState({
+        0: false,
+        1: false,
+        2: false,
+        3: false,
+        4: false,
+        5: false,
+        6: false,
+        7: false,
+        8: false,
+        9: false,
+        10: false,
+        11: false,
+        12: false,
+        13: false,
+        14: false,
+    });
+
+    const [localFilter, setLocalFilter] = useState(0);
+
+    const handleChange = (event, index) => {
+        if (event.target.checked == true) {
+            setLocalFilter(localFilter | (1 << index));
+            setState({
+                ...state,
+                [index]: false,
+            });
+        } else {
+            setLocalFilter(localFilter & (~(1 << index)));
+            setState({
+                ...state,
+                [index]: true,
+            });
+        }
+        setFilter(localFilter);
+    };
+
     return (
         <Container>
             <HeaderWrapper>
+                <HeaderText>{localFilter}</HeaderText>
                 <HeaderText>Showing {currentDataLength} out of {totalItems}</HeaderText>
                 <TextWrapper>
                     <FilterAltIcon sx={{ fontSize: "40px" }}/><HeaderText>Filter</HeaderText>
                 </TextWrapper>
             </HeaderWrapper>
             <FormGroup>
-                <FormControlLabel control={<Checkbox />} label={<Text>Bamboo/Corn/Mushrooms</Text>} />
-                <FormControlLabel control={<Checkbox />} label={<Text>Beverages/Juices</Text>} />
-                <FormControlLabel control={<Checkbox />} label={<Text>Candies/Snacks</Text>} />
-                <FormControlLabel control={<Checkbox />} label={<Text>Canned Coconut Milk</Text>} />
-                <FormControlLabel control={<Checkbox />} label={<Text>Canned Fruits & Vegetables</Text>} />
-                <FormControlLabel control={<Checkbox />} label={<Text>Curry & Paste</Text>} />
-                <FormControlLabel control={<Checkbox />} label={<Text>Dried Products</Text>} />
-                <FormControlLabel control={<Checkbox />} label={<Text>Frozen Products</Text>} />
-                <FormControlLabel control={<Checkbox />} label={<Text>Instant Noodles</Text>} />
-                <FormControlLabel control={<Checkbox />} label={<Text>Other Canned Products</Text>} />
-                <FormControlLabel control={<Checkbox />} label={<Text>Pickled & Preserved Products</Text>} />
-                <FormControlLabel control={<Checkbox />} label={<Text>Rice</Text>} />
-                <FormControlLabel control={<Checkbox />} label={<Text>Rice Products/Beans/Starch</Text>} />
-                <FormControlLabel control={<Checkbox />} label={<Text>Sauces/Spices/Seasonings</Text>} />
-                <FormControlLabel control={<Checkbox />} label={<Text>Utensils & Non-Food Products</Text>} />
+                {categories.map((category, index) => {
+                    
+                    return <FormControlLabel control={<Checkbox checked={} onChange={(e) => {handleChange(e, index)}} name={category}/>} label={<Text>{category}</Text>} />
+                })}
             </FormGroup>
         </Container>
     )
