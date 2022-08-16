@@ -69,20 +69,23 @@ const CheckboxMenu = ({filter, setFilter, currentDataLength, totalItems}) => {
     const [localFilter, setLocalFilter] = useState(0);
 
     const handleChange = (event, index) => {
-        if (event.target.checked == true) {
+        if ((localFilter & (1 << index)) == 0) {
             setLocalFilter(localFilter | (1 << index));
             setState({
                 ...state,
                 [index]: false,
             });
+
+            setFilter(localFilter);
         } else {
             setLocalFilter(localFilter & (~(1 << index)));
             setState({
                 ...state,
                 [index]: true,
             });
+
+            setFilter(localFilter);
         }
-        setFilter(localFilter);
     };
 
     return (
@@ -96,8 +99,7 @@ const CheckboxMenu = ({filter, setFilter, currentDataLength, totalItems}) => {
             </HeaderWrapper>
             <FormGroup>
                 {categories.map((category, index) => {
-                    
-                    return <FormControlLabel control={<Checkbox checked={} onChange={(e) => {handleChange(e, index)}} name={category}/>} label={<Text>{category}</Text>} />
+                    return <FormControlLabel control={<Checkbox checked={index} onChange={(e) => {handleChange(e, index)}} name={category}/>} label={<Text>{category}</Text>} />
                 })}
             </FormGroup>
         </Container>

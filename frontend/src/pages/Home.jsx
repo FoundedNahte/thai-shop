@@ -107,9 +107,7 @@ const testData = {
 // Stores for query parameters
 export const ShopContext = createContext();
 
-function filterReducer(state, newBit) {
-  return state | (1 << newBit);
-}
+
 
 export function constructLink(newBit, newTerm) {
   var temp = "http://localhost:8000/search?";
@@ -123,7 +121,7 @@ export function constructLink(newBit, newTerm) {
 }
 
 const Home = () => {
-    const [filter, setFilter] = useReducer(filterReducer, 0);
+    const [filter, setFilter] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
     const [link, setLink] = useState(constructLink(filter, searchTerm));
     
